@@ -34,7 +34,7 @@ include 'header.php';
     $query = "SELECT pembayaran.*, penghuni.nama_penghuni 
                 FROM pembayaran 
                 LEFT JOIN penghuni ON pembayaran.id_penghuni = penghuni.id_penghuni 
-                ORDER BY pembayaran.id_pembayaran DESC";
+                ORDER BY pembayaran.id_pembayaran ASC";
     $result = mysqli_query($koneksi, $query);
 
     if (mysqli_num_rows($result) > 0) {
