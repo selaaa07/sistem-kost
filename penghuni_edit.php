@@ -24,40 +24,112 @@ if (isset($_POST['update'])) {
         header("Location: penghuni_tampil.php");
         exit;
     } else {
-        echo "Gagal update: " . mysqli_error($koneksi);
+        $error = "Gagal update: " . mysqli_error($koneksi);
     }
 }
+
+include 'header.php';
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Penghuni</title>
-</head>
-<body>
-    <h2>Edit Penghuni: <?php echo $data['nama_penghuni']; ?></h2>
+<div class="mb-4">
+    <p class="text-primary fw-semibold small mb-2">
+        KELOLA DATA KOST
+    </p>
+
+    <h2 class="fw-bold mb-2" style="color: #243b64;">
+        Edit Penghuni
+    </h2>
+
+    <p class="text-secondary mb-0">
+        Perbarui informasi penghuni Kost Logic.
+    </p>
+</div>
+
+<div class="content-panel">
+    <div class="mb-4">
+        <h5 class="fw-bold mb-1">Informasi Penghuni</h5>
+        <p class="text-secondary small mb-0">
+            Ubah data penghuni pada formulir berikut.
+        </p>
+    </div>
+
+    <?php if (isset($error)) { ?>
+        <div class="alert alert-danger">
+            <?= htmlspecialchars($error) ?>
+        </div>
+    <?php } ?>
+
     <form method="POST" action="">
-        <label>Nama Penghuni:</label><br>
-        <input type="text" name="nama_penghuni" value="<?php echo $data['nama_penghuni']; ?>" required><br><br>
+        <div class="mb-3">
+            <label for="nama_penghuni" class="form-label fw-semibold">
+                Nama Penghuni
+            </label>
 
-        <label>Nomor HP:</label><br>
-        <input type="text" name="no_hp" value="<?php echo $data['no_hp']; ?>" required><br><br>
+            <input
+                type="text"
+                class="form-control"
+                id="nama_penghuni"
+                name="nama_penghuni"
+                value="<?= htmlspecialchars($data['nama_penghuni']) ?>"
+                required
+            >
+        </div>
 
-        <label>Pilih Kamar:</label><br>
-        <select name="id_kamar" required>
-            <?php
-            $query_kamar = "SELECT * FROM kamar WHERE status_kamar = 'kosong' OR id_kamar = '$kamar_lama'";
-            $result_kamar = mysqli_query($koneksi, $query_kamar);
-            
-            while ($k = mysqli_fetch_assoc($result_kamar)) {
-                $selected = ($k['id_kamar'] == $kamar_lama) ? 'selected' : '';
-                echo "<option value='" . $k['id_kamar'] . "' $selected>Kamar " . $k['id_kamar'] . "</option>";
-            }
-            ?>
-        </select><br><br>
+        <div class="mb-3">
+            <label for="no_hp" class="form-label fw-semibold">
+                Nomor HP
+            </label>
 
-        <button type="submit" name="update">Update Data</button>
-        <a href="penghuni_tampil.php">Batal</a>
+            <input
+                type="text"
+                class="form-control"
+                id="no_hp"
+                name="no_hp"
+                value="<?= htmlspecialchars($data['no_hp']) ?>"
+                required
+            >
+        </div>
+
+        <div class="mb-4">
+            <label for="id_kamar" class="form-label fw-semibold">
+                Pilih Kamar
+            </label>
+
+            <select
+                class="form-select"
+                id="id_kamar"
+                name="id_kamar"
+                required
+            >
+                <?php
+                $query_kamar = "SELECT * FROM kamar WHERE status_kamar = 'kosong' OR id_kamar = '$kamar_lama'";
+                $result_kamar = mysqli_query($koneksi, $query_kamar);
+                
+                while ($k = mysqli_fetch_assoc($result_kamar)) {
+                    $selected = ($k['id_kamar'] == $kamar_lama) ? 'selected' : '';
+                    echo "<option value='" . $k['id_kamar'] . "' $selected>Kamar " . $k['id_kamar'] . "</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <button
+                type="submit"
+                name="update"
+                class="btn btn-primary px-4 py-2"
+            >
+                Update Data
+            </button>
+
+            <a
+                href="penghuni_tampil.php"
+                class="btn btn-outline-secondary px-4 py-2"
+            >
+                Batal
+            </a>
+        </div>
     </form>
-</body>
-</html>
+</div>
+
+<?php include 'footer.php'; ?>

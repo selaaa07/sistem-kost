@@ -1,45 +1,65 @@
 <?php
 include 'koneksi.php';
+include 'header.php';
 ?>
 
-<?php 
-include 'header.php'; 
-?>
+<div class="content-panel">
 
-<h2>Daftar Penghuni Kost</h2>
-<a href="penghuni_tambah.php">+ Tambah Penghuni Baru</a>
-<br><br>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-2">Daftar Penghuni Kost</h2>
+            <p class="text-secondary mb-0">
+                Kelola data penghuni dan informasi kamar yang ditempati.
+            </p>
+        </div>
 
-<table border="1" cellpadding="10" cellspacing="0">
-    <tr>
-        <th>ID Penghuni</th>
-        <th>Nama Penghuni</th>
-        <th>No HP</th>
-        <th>Kamar (Fasilitas)</th>
-        <th>Aksi</th>
-    </tr>
-    
-    <?php
-    $query = "SELECT penghuni.id_penghuni, penghuni.nama_penghuni, penghuni.no_hp, kamar.id_kamar, kamar.fasilitas 
-              FROM penghuni 
-              JOIN kamar ON penghuni.id_kamar = kamar.id_kamar";
-    $result = mysqli_query($koneksi, $query);
+        <a href="penghuni_tambah.php" class="btn btn-primary">
+            + Tambah Penghuni
+        </a>
+    </div>
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo "<tr>";
-        echo "<td>" . $row['id_penghuni'] . "</td>";
-        echo "<td>" . $row['nama_penghuni'] . "</td>";
-        echo "<td>" . $row['no_hp'] . "</td>";
-        echo "<td>Kamar " . $row['id_kamar'] . " - " . $row['fasilitas'] . "</td>";
-        echo "<td>
-                <a href='penghuni_edit.php?id=" . $row['id_penghuni'] . "'>Edit</a> | 
-                <a href='penghuni_hapus.php?id=" . $row['id_penghuni'] . "'>Hapus</a>
-              </td>";
-        echo "</tr>";
-    }
-    ?>
-</table>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID Penghuni</th>
+                    <th>Nama Penghuni</th>
+                    <th>No. HP</th>
+                    <th>Kamar</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
 
-<?php 
-include 'footer.php'; 
-?>
+            <tbody>
+                <?php
+                $query = "SELECT penghuni.id_penghuni, penghuni.nama_penghuni, penghuni.no_hp, kamar.id_kamar, kamar.fasilitas
+                          FROM penghuni
+                          JOIN kamar ON penghuni.id_kamar = kamar.id_kamar";
+
+                $result = mysqli_query($koneksi, $query);
+
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<tr>";
+                    echo "<td>" . $row['id_penghuni'] . "</td>";
+                    echo "<td class='fw-semibold'>" . $row['nama_penghuni'] . "</td>";
+                    echo "<td>" . $row['no_hp'] . "</td>";
+                    echo "<td>
+                            <div class='fw-semibold'>Kamar " . $row['id_kamar'] . "</div>
+                            <small class='text-secondary'>" . $row['fasilitas'] . "</small>
+                          </td>";
+                    echo "<td>
+                            <div class='d-flex gap-2'>
+                                <a href='penghuni_edit.php?id=" . $row['id_penghuni'] . "' class='btn btn-sm btn-outline-primary'>Edit</a>
+                                <a href='penghuni_hapus.php?id=" . $row['id_penghuni'] . "' class='btn btn-sm btn-outline-danger'>Hapus</a>
+                            </div>
+                          </td>";
+                    echo "</tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<?php include 'footer.php'; ?>
