@@ -39,7 +39,6 @@ include 'header.php';
                 <th>Tanggal Bayar</th>
                 <th>Bulan Tagihan</th>
                 <th>Nominal Tagihan</th>
-                <!-- Tambahan Kolom Baru -->
                 <th>Bank</th>
                 <th>No Rekening</th>
                 <th>Bukti Transfer</th>
