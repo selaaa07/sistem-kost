@@ -12,7 +12,6 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'lunas' && isset($_GET['id'])) {
 include 'header.php'; 
 ?>
 
-<!-- Header UI Baru (dari branch main) -->
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
         <p class="text-primary fw-semibold small mb-2">KELOLA DATA KOST</p>
@@ -25,7 +24,6 @@ include 'header.php';
     </a>
 </div>
 
-<!-- Tabel UI Baru (dari branch main) -->
 <div class="table-responsive">
     <table class="table table-hover table-striped align-middle mb-0">
         <thead>
@@ -35,7 +33,6 @@ include 'header.php';
                 <th>Tanggal Bayar</th>
                 <th>Bulan Tagihan</th>
                 <th>Nominal Tagihan</th>
-                <!-- Tambahan Kolom (dari branch kamu) -->
                 <th>Bank</th>
                 <th>No Rekening</th>
                 <th>Bukti Transfer</th>
@@ -80,7 +77,6 @@ include 'header.php';
                     Rp <?= $nominal_rupiah ?>
                 </td>
 
-                <!-- Tambahan Data (dari branch kamu) -->
                 <td>
                     <?= htmlspecialchars($row['nama_bank'] ?? '-') ?>
                 </td>
