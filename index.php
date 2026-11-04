@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
     header("Location: login.php");
     exit;
@@ -12,7 +13,7 @@ include 'header.php';
     <div class="card-body p-4 p-md-5">
 
         <p class="mb-3 text-white-50fw">
-            INFORMASI DAN PENGELOLAAN KOST
+            INFORMASI DAN PENGELOLAAN KOST LOGIC
         </p>
 
         <div class="row g-4">
