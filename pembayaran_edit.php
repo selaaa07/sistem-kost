@@ -45,9 +45,6 @@ include 'header.php';
         Edit Data Pembayaran
     </h2>
 
-    <p class="text-secondary mb-0">
-        Perbarui informasi transaksi pembayaran penghuni kost.
-    </p>
 </div>
 
 <?php if (isset($error_msg)) { ?>
@@ -57,14 +54,6 @@ include 'header.php';
 <?php } ?>
 
 <?php if ($data) { ?>
-
-<div class="content-panel">
-    <div class="mb-4">
-        <h5 class="fw-bold mb-1">Informasi Pembayaran</h5>
-        <p class="text-secondary small mb-0">
-            Pastikan informasi yang diperbarui sudah benar.
-        </p>
-    </div>
 
     <form action="" method="POST">
 

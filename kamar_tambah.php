@@ -32,10 +32,6 @@ include 'header.php';
 ?>
 
 <div class="mb-4">
-    <a href="kamar_tampil.php"
-       class="text-decoration-none text-secondary">
-        &larr; Kembali ke Daftar Kamar
-    </a>
 
     <p class="text-primary fw-semibold small mt-4 mb-2">
         KELOLA DATA KOST
@@ -45,9 +41,6 @@ include 'header.php';
         Tambah Kamar Baru
     </h2>
 
-    <p class="text-secondary mb-0">
-        Isi informasi kamar yang ingin ditambahkan ke Kost Logic.
-    </p>
 </div>
 
 <div class="row justify-content-center">
@@ -161,7 +154,7 @@ include 'header.php';
                 <div class="d-flex flex-wrap justify-content-end gap-2">
                     <a href="kamar_tampil.php"
                        class="btn btn-outline-secondary px-4 py-2">
-                        Batal
+                        Batal & Kembali
                     </a>
 
                     <button type="submit"

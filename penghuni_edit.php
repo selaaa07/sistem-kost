@@ -39,10 +39,6 @@ include 'header.php';
     <h2 class="fw-bold mb-2" style="color: #243b64;">
         Edit Penghuni
     </h2>
-
-    <p class="text-secondary mb-0">
-        Perbarui informasi penghuni Kost Logic.
-    </p>
 </div>
 
 <div class="content-panel">
@@ -126,7 +122,7 @@ include 'header.php';
                 href="penghuni_tampil.php"
                 class="btn btn-outline-secondary px-4 py-2"
             >
-                Batal
+                Batal & Kembali
             </a>
         </div>
     </form>

@@ -59,7 +59,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
     <div class="container">
         <a class="navbar-brand fw-bold" href="index.php">
-            Kos Logic
+            Kost Logic
         </a>
 
         <button class="navbar-toggler" type="button"
