@@ -23,7 +23,7 @@ include 'header.php';
         </h2>
 
         <p class="text-secondary mb-0">
-            Kelola pencatatan transaksi bulanan penghuni Kost Logic.
+            Informasi Pembayaran
         </p>
     </div>
 
@@ -32,13 +32,6 @@ include 'header.php';
     </a>
 </div>
 
-<div class="content-panel">
-    <div class="mb-3">
-        <h5 class="fw-bold mb-1">Informasi Pembayaran</h5>
-        <p class="text-secondary small mb-0">
-            Daftar tagihan dan riwayat transaksi penghuni kost.
-        </p>
-    </div>
 
     <div class="table-responsive">
         <table class="table table-hover table-striped align-middle mb-0">
@@ -162,5 +155,9 @@ include 'header.php';
         </table>
     </div>
 </div>
+
+<a href="index.php" class="btn btn-secondary">
+    Kembali
+</a>
 
 <?php include 'footer.php'; ?>
