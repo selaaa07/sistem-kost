@@ -7,9 +7,12 @@ include 'header.php';
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
+             <p class="text-primary fw-semibold small mb-2">
+            KELOLA DATA KOST
+        </p>
             <h2 class="fw-bold mb-2">Daftar Penghuni Kost</h2>
             <p class="text-secondary mb-0">
-                Kelola data penghuni dan informasi kamar yang ditempati.
+                Informasi Penghuni
             </p>
         </div>
 
@@ -61,5 +64,9 @@ include 'header.php';
     </div>
 
 </div>
+
+<a href="index.php" class="btn btn-secondary">
+    Kembali
+</a>
 
 <?php include 'footer.php'; ?>

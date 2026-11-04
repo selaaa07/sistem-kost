@@ -102,7 +102,7 @@ include 'header.php';
                 Simpan Perubahan
             </button>
             <a href="kamar_tampil.php" class="btn btn-outline-secondary">
-                Batal
+                Batal & Kembali
             </a>
         </div>
     </form>

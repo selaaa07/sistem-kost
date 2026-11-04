@@ -32,17 +32,10 @@ include 'header.php';
     </h2>
 
     <p class="text-secondary mb-0">
-        Masukkan informasi transaksi pembayaran penghuni Kost Logic.
+        Informasi Pembayaran
     </p>
 </div>
 
-<div class="content-panel">
-    <div class="mb-4">
-        <h5 class="fw-bold mb-1">Informasi Pembayaran</h5>
-        <p class="text-secondary small mb-0">
-            Lengkapi formulir berikut untuk mencatat transaksi baru.
-        </p>
-    </div>
 
     <?php if (isset($error_msg)) { ?>
         <div class="alert alert-danger">
@@ -157,7 +150,7 @@ include 'header.php';
                 href="pembayaran_tampil.php"
                 class="btn btn-outline-secondary px-4 py-2"
             >
-                Kembali
+                Batal & Kembali
             </a>
         </div>
 

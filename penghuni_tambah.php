@@ -31,9 +31,6 @@ include 'header.php';
         Tambah Penghuni
     </h2>
 
-    <p class="text-secondary mb-0">
-        Masukkan informasi penghuni baru ke dalam sistem Kost Logic.
-    </p>
 </div>
 
 <div class="content-panel">
@@ -116,7 +113,7 @@ include 'header.php';
                 href="penghuni_tampil.php"
                 class="btn btn-outline-secondary px-4 py-2"
             >
-                Batal
+                Batal & Kembali
             </a>
         </div>
     </form>
