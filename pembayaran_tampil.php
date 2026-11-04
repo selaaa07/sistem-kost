@@ -2,7 +2,7 @@
 include 'koneksi.php'; 
 
 if (isset($_GET['aksi']) && $_GET['aksi'] == 'lunas' && isset($_GET['id'])) {
-    $id_bayar = $_GET['id'];
+    $id_bayar = mysqli_real_escape_string($koneksi, $_GET['id']);
     $update_query = "UPDATE pembayaran SET status_pembayaran = 'lunas' WHERE id_pembayaran = '$id_bayar'";
     mysqli_query($koneksi, $update_query);
     header("Location: pembayaran_tampil.php");
@@ -25,6 +25,9 @@ include 'header.php';
             <th>Tanggal Bayar</th>
             <th>Bulan Tagihan</th>
             <th>Nominal Tagihan (Rp)</th>
+            <th>Bank</th>
+            <th>No Rekening</th>
+            <th>Bukti Transfer</th>
             <th>Status</th>
             <th>Aksi</th>
         </tr>
@@ -47,6 +50,17 @@ include 'header.php';
             echo "<td>" . ($row['tanggal_bayar'] ?? '-') . "</td>";
             echo "<td>" . $row['bulan_tagihan'] . "</td>";
             echo "<td>Rp " . $nominal_rupiah . "</td>";
+
+            echo "<td>" . ($row['nama_bank'] ?? '-') . "</td>";
+            echo "<td>" . ($row['no_rekening'] ?? '-') . "</td>";
+            echo "<td>";
+            if (!empty($row['bukti_bayar'])) {
+                echo "<a href='uploads/" . $row['bukti_bayar'] . "' target='_blank' style='padding: 4px 8px; background: #17a2b8; color: #fff; text-decoration: none; border-radius: 4px; font-size: 14px;'>Lihat Bukti</a>";
+            } else {
+                echo "<span style='color: gray;'>Belum ada bukti</span>";
+            }
+            echo "</td>";
+
             echo "<td><strong>" . ucfirst($row['status_pembayaran']) . "</strong></td>";
                 
             
@@ -61,7 +75,7 @@ include 'header.php';
             echo "</tr>";
         }
     } else {
-        echo "<tr><td colspan='7' style='text-align:center;'>Belum ada riwayat transaksi.</td></tr>";
+        echo "<tr><td colspan='10' style='text-align:center;'>Belum ada riwayat transaksi.</td></tr>";
     }
     ?>
 
