@@ -27,7 +27,7 @@ if (isset($_POST['login'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login Admin - Kos Logic</title>
+    <title>adminkost</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -66,7 +66,7 @@ if (isset($_POST['login'])) {
     <div class="login-card">
 
         <div class="text-center mb-4">
-            <h3 class="fw-bold text-primary">Kos Logic</h3>
+            <h3 class="fw-bold text-primary">Kost Logic</h3>
             <p class="text-secondary">login admin</p>
         </div>
 
