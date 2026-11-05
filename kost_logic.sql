@@ -77,7 +77,7 @@ INSERT INTO penghuni (nama_penghuni, no_hp, id_kamar) VALUES
 
 -- Data Pembayaran
 INSERT INTO pembayaran (id_penghuni, bulan_tagihan, nominal_tagihan, status_pembayaran, tanggal_bayar, nama_bank, no_rekening, bukti_bayar) VALUES
-(1, 'Oktober 2026', 600000.00, 'lunas', '2026-10-01', 'BNI', '0882391045', 'bukti_1_1793812610.jpg'),
+(1, 'Oktober 2026', 600000.00, 'lunas', '2026-10-01', 'BNI', '0882391045', 'bukti_1_1793813118.jpg'),
 (2, 'Oktober 2026', 600000.00, 'belum lunas', NULL, NULL, NULL, NULL),
 (3, 'Oktober 2026', 600000.00, 'lunas', '2026-10-05', 'BRI', '034101004829501', 'bukti_3_1793812490.jpg'),
 (4, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-02', 'Mandiri', '1370098234112', 'bukti_4_1793812440.jpg'),
