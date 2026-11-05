@@ -18,7 +18,8 @@ CREATE TABLE kamar (
     fasilitas VARCHAR(200),
     harga DECIMAL(12, 2),
     status_kamar ENUM('terisi', 'kosong'),
-    password VARCHAR(50) DEFAULT 'kost123'
+    password VARCHAR(50) DEFAULT 'kost123',
+    foto VARCHAR(255) DEFAULT NULL
 );
 
 -- 3. TABEL PENGHUNI (TETAP)
@@ -54,17 +55,31 @@ INSERT INTO admin (username, password) VALUES
 ('admin', 'admin123');
 
 -- Data Kamar
-INSERT INTO kamar (id_kamar, fasilitas, harga, status_kamar) VALUES
-(101, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'terisi'),
-(102, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'terisi'),
-(103, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'terisi'),
-(104, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'kosong'),
-(105, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'kosong'),
-(201, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'terisi'),
-(202, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'terisi'),
-(203, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'terisi'),
-(204, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'kosong'),
-(205, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'kosong');
+INSERT INTO kamar (id_kamar, fasilitas, harga, status_kamar, foto) VALUES
+(101, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'terisi', 'kamar1_1.jpeg'),
+(102, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'terisi', 'kamar1_2.jpeg'),
+(103, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'terisi', 'kamar1_3.jpeg'),
+(104, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'kosong', 'kamar1_4.jpeg'),
+(105, 'Lantai 1 - Kipas Angin, Kasur, Lemari, Kamar Mandi Luar', 600000.00, 'kosong', 'kamar1_5.jpeg'),
+(201, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'terisi', 'kamar2_1.jpeg'),
+(202, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'terisi', 'kamar2_2.jpeg'),
+(203, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'terisi', 'kamar2_3.jpeg'),
+(204, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'kosong', 'kamar2_4.jpeg'),
+(205, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'kosong', 'kamar2_5.jpeg');
+
+UPDATE kamar SET foto = 'kamar1_1.jpeg' WHERE id_kamar = 101;
+UPDATE kamar SET foto = 'kamar1_2.jpeg' WHERE id_kamar = 102;
+UPDATE kamar SET foto = 'kamar1_3.jpeg' WHERE id_kamar = 103;
+UPDATE kamar SET foto = 'kamar1_4.jpeg' WHERE id_kamar = 104;
+UPDATE kamar SET foto = 'kamar1_5.jpeg' WHERE id_kamar = 105;
+
+UPDATE kamar SET foto = 'kamar2_1.jpeg' WHERE id_kamar = 201;
+UPDATE kamar SET foto = 'kamar2_2.jpeg' WHERE id_kamar = 202;
+UPDATE kamar SET foto = 'kamar2_3.jpeg' WHERE id_kamar = 203;
+UPDATE kamar SET foto = 'kamar2_4.jpeg' WHERE id_kamar = 204;
+UPDATE kamar SET foto = 'kamar2_5.jpeg' WHERE id_kamar = 205;
+
+SELECT * FROM kamar;
 
 -- Data Penghuni
 INSERT INTO penghuni (nama_penghuni, no_hp, id_kamar) VALUES
