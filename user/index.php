@@ -21,6 +21,9 @@ include 'header.php';
     if ($query && mysqli_num_rows($query) > 0) {
 
         while ($row = mysqli_fetch_assoc($query)) {
+
+            $namaFoto = basename($row['foto'] ?? '');
+            $namaFoto = preg_replace('/\.jpg$/i', '.jpeg', $namaFoto);
     ?>
 
     <div class="col-6 col-md-4 col-lg-3">
@@ -43,6 +46,51 @@ include 'header.php';
                 <p class="text-secondary small mb-0">
                     <?= htmlspecialchars($row['fasilitas']) ?>
                 </p>
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm mt-3"
+                        data-bs-toggle="modal"
+                        data-bs-target="#foto<?= $row['id_kamar'] ?>">
+                    🖼️ Lihat Foto Kamar
+                </button>
+
+                <div class="modal fade"
+                     id="foto<?= $row['id_kamar'] ?>"
+                     tabindex="-1">
+
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    Foto Kamar <?= htmlspecialchars($row['id_kamar']) ?>
+                                </h5>
+
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal">
+                                </button>
+                            </div>
+
+                            <div class="modal-body text-center">
+
+                                <?php if (!empty($namaFoto)) { ?>
+
+                                    <img src="../foto%20kamar/<?= htmlspecialchars($namaFoto) ?>"
+                                         class="img-fluid rounded"
+                                         alt="Foto Kamar <?= htmlspecialchars($row['id_kamar']) ?>">
+
+                                <?php } else { ?>
+
+                                    <p class="text-secondary">
+                                        Foto kamar belum tersedia.
+                                    </p>
+
+                                <?php } ?>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -75,8 +123,7 @@ include 'header.php';
             <p class="text-secondary small mb-3">
                 langsung aja hubungi admin kost logic
             </p>
-
-            <a href="https://wa.me/62877777777777?text=Halo saya mau pesan kamar di kost logic"
+            <a href="https://wa.me/62877777777789?text=Halo saya mau pesan kamar di kost logic"
                target="_blank"
                class="btn btn-success btn-sm px-4">
                 💬 admin kost logic

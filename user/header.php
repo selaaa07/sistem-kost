@@ -22,6 +22,7 @@ if (session_status() === PHP_SESSION_NONE) {
         .card { border: none; border-radius: 16px; }
     </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm mb-4">
     <div class="container">
@@ -31,7 +32,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <a href="dashboard.php" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
                 <a href="logout.php" class="btn btn-danger btn-sm">Logout</a>
             <?php } else { ?>
-                <a href="login.php" class="btn btn-outline-light btn-sm">Login Penghuni</a>
+                <a href="login.php" class="btn btn-outline-light btn-sm">Login Penghuni Kost</a>
             <?php } ?>
         </div>
     </div>
