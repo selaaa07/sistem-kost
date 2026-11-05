@@ -1,4 +1,3 @@
-
 <?php
 include __DIR__ . '/../koneksi.php';
 include 'header.php';
@@ -126,7 +125,7 @@ include 'header.php';
                 langsung aja hubungi admin kost logic
             </p>
 
-            <a href="https://wa.me/62877777777789?text=Halo saya mau pesan kamar di kost logic"
+            <a href="https://wa.me/62877777777778?text=Halo saya mau pesan kamar di kost logic"
                target="_blank"
                class="btn btn-success btn-sm px-4">
                 💬 admin kost logic
