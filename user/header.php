@@ -32,7 +32,7 @@ if (session_status() === PHP_SESSION_NONE) {
                 <a href="dashboard.php" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
                 <a href="logout.php" class="btn btn-danger btn-sm">Logout</a>
             <?php } else { ?>
-                <a href="login.php" class="btn btn-outline-light btn-sm">Login Penghuni</a>
+                <a href="login.php" class="btn btn-outline-light btn-sm">Login Penghuni Kost</a>
             <?php } ?>
         </div>
     </div>
