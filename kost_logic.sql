@@ -67,20 +67,6 @@ INSERT INTO kamar (id_kamar, fasilitas, harga, status_kamar, foto) VALUES
 (204, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'kosong', 'kamar2_4.jpeg'),
 (205, 'Lantai 2 - AC, Kasur, Lemari, Meja, Kamar Mandi Dalam', 1200000.00, 'kosong', 'kamar2_5.jpeg');
 
-UPDATE kamar SET foto = 'kamar1_1.jpeg' WHERE id_kamar = 101;
-UPDATE kamar SET foto = 'kamar1_2.jpeg' WHERE id_kamar = 102;
-UPDATE kamar SET foto = 'kamar1_3.jpeg' WHERE id_kamar = 103;
-UPDATE kamar SET foto = 'kamar1_4.jpeg' WHERE id_kamar = 104;
-UPDATE kamar SET foto = 'kamar1_5.jpeg' WHERE id_kamar = 105;
-
-UPDATE kamar SET foto = 'kamar2_1.jpeg' WHERE id_kamar = 201;
-UPDATE kamar SET foto = 'kamar2_2.jpeg' WHERE id_kamar = 202;
-UPDATE kamar SET foto = 'kamar2_3.jpeg' WHERE id_kamar = 203;
-UPDATE kamar SET foto = 'kamar2_4.jpeg' WHERE id_kamar = 204;
-UPDATE kamar SET foto = 'kamar2_5.jpeg' WHERE id_kamar = 205;
-
-SELECT * FROM kamar;
-
 -- Data Penghuni
 INSERT INTO penghuni (nama_penghuni, no_hp, id_kamar) VALUES
 ('Budi Santoso', '081234567890', 101),
