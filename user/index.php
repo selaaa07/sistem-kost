@@ -46,7 +46,6 @@ include 'header.php';
                 <p class="text-secondary small mb-0">
                     <?= htmlspecialchars($row['fasilitas']) ?>
                 </p>
-
                 <button type="button"
                         class="btn btn-outline-primary btn-sm mt-3"
                         data-bs-toggle="modal"
@@ -124,8 +123,7 @@ include 'header.php';
             <p class="text-secondary small mb-3">
                 langsung aja hubungi admin kost logic
             </p>
-
-            <a href="https://wa.me/62877777777778?text=Halo saya mau pesan kamar di kost logic"
+            <a href="https://wa.me/62877777777789?text=Halo saya mau pesan kamar di kost logic"
                target="_blank"
                class="btn btn-success btn-sm px-4">
                 💬 admin kost logic
