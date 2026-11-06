@@ -1,7 +1,5 @@
-DROP DATABASE IF EXISTS kost_logic;
 CREATE DATABASE kost_logic;
 USE kost_logic;
--- tolong klik petir di MySQL Workbench untuk menjalankan query ini agar database kost_logic dibuat dan digunakan.
 
 -- 1. TABEL ADMIN (BARU)
 
