@@ -12,8 +12,6 @@ if (isset($_POST['simpan'])) {
     $tanggal_bayar     = mysqli_real_escape_string($koneksi, $_POST['tanggal_bayar']);
     $bulan_tagihan     = mysqli_real_escape_string($koneksi, $_POST['bulan_tagihan']);
     $nominal_tagihan   = mysqli_real_escape_string($koneksi, $_POST['nominal_tagihan']);
-    $nama_bank         = mysqli_real_escape_string($koneksi, $_POST['nama_bank']);
-    $no_rekening       = mysqli_real_escape_string($koneksi, $_POST['no_rekening']);
     $status_pembayaran = mysqli_real_escape_string($koneksi, $_POST['status_pembayaran']);
 
     $nama_file_bukti = '';
@@ -44,8 +42,8 @@ if (isset($_POST['simpan'])) {
     }
 
     if (!isset($error_msg)) {
-        $query_insert = "INSERT INTO pembayaran (id_penghuni, tanggal_bayar, bulan_tagihan, nominal_tagihan, nama_bank, no_rekening, bukti_bayar, status_pembayaran) 
-                         VALUES ('$id_penghuni', '$tanggal_bayar', '$bulan_tagihan', '$nominal_tagihan', '$nama_bank', '$no_rekening', '$nama_file_bukti', '$status_pembayaran')";
+        $query_insert = "INSERT INTO pembayaran (id_penghuni, tanggal_bayar, bulan_tagihan, nominal_tagihan, bukti_bayar, status_pembayaran) 
+                         VALUES ('$id_penghuni', '$tanggal_bayar', '$bulan_tagihan', '$nominal_tagihan', '$nama_file_bukti', '$status_pembayaran')";
         
         if (mysqli_query($koneksi, $query_insert)) {
             header("Location: pembayaran_tampil.php");
@@ -156,32 +154,9 @@ include 'header.php';
         >
     </div>
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="nama_bank" class="form-label fw-semibold">
-                Nama Bank / Metode
-            </label>
-            <input
-                type="text"
-                name="nama_bank"
-                id="nama_bank"
-                class="form-control"
-                placeholder="Contoh: BCA / Mandiri / Tunai"
-            >
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <label for="no_rekening" class="form-label fw-semibold">
-                No. Rekening Pengirim
-            </label>
-            <input
-                type="text"
-                name="no_rekening"
-                id="no_rekening"
-                class="form-control"
-                placeholder="Masukkan nomor rekening"
-            >
-        </div>
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Metode Pembayaran</label>
+        <input type="text" class="form-control" value="Transfer" disabled>
     </div>
 
     <div class="mb-3">

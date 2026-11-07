@@ -35,8 +35,6 @@ CREATE TABLE pembayaran (
     nominal_tagihan DECIMAL(12,2),
     status_pembayaran ENUM('lunas', 'menunggu', 'belum lunas'),
     tanggal_bayar DATE,
-    nama_bank VARCHAR(50) DEFAULT NULL,
-    no_rekening VARCHAR(50) DEFAULT NULL,
     bukti_bayar VARCHAR(255) DEFAULT NULL,
     FOREIGN KEY (id_penghuni) REFERENCES penghuni(id_penghuni)
 );
@@ -79,10 +77,10 @@ INSERT INTO penghuni (nama_penghuni, no_hp, id_kamar) VALUES
 ('Fajar Hidayat', '089644556677', 203);
 
 -- Data Pembayaran
-INSERT INTO pembayaran (id_penghuni, bulan_tagihan, nominal_tagihan, status_pembayaran, tanggal_bayar, nama_bank, no_rekening, bukti_bayar) VALUES
-(1, 'Oktober 2026', 600000.00, 'lunas', '2026-10-01', 'BNI', '0882391045', 'bukti_1_1793813118.jpg'),
-(2, 'Oktober 2026', 600000.00, 'belum lunas', NULL, NULL, NULL, NULL),
-(3, 'Oktober 2026', 600000.00, 'lunas', '2026-10-05', 'BRI', '034101004829501', 'bukti_3_1793812490.jpg'),
-(4, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-02', 'Mandiri', '1370098234112', 'bukti_4_1793812440.jpg'),
-(5, 'Oktober 2026', 1200000.00, 'belum lunas', NULL, NULL, NULL, NULL),
-(6, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-10', 'BCA', '8720451923', 'bukti_6_1793811717.jpg');
+INSERT INTO pembayaran (id_penghuni, bulan_tagihan, nominal_tagihan, status_pembayaran, tanggal_bayar, bukti_bayar) VALUES
+(1, 'Oktober 2026', 600000.00, 'lunas', '2026-10-01', 'bukti_1_1793813118.jpg'),
+(2, 'Oktober 2026', 600000.00, 'belum lunas', NULL, NULL),
+(3, 'Oktober 2026', 600000.00, 'lunas', '2026-10-05', 'bukti_3_1793812490.jpg'),
+(4, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-02', 'bukti_4_1793812440.jpg'),
+(5, 'Oktober 2026', 1200000.00, 'belum lunas', NULL, NULL),
+(6, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-10', 'bukti_6_1793811717.jpg');

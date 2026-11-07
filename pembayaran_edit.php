@@ -20,8 +20,6 @@ if (isset($_POST['update'])) {
     $tanggal_bayar     = mysqli_real_escape_string($koneksi, $_POST['tanggal_bayar']);
     $bulan_tagihan     = mysqli_real_escape_string($koneksi, $_POST['bulan_tagihan']);
     $nominal_tagihan   = mysqli_real_escape_string($koneksi, $_POST['nominal_tagihan']);
-    $nama_bank         = mysqli_real_escape_string($koneksi, $_POST['nama_bank']);
-    $no_rekening       = mysqli_real_escape_string($koneksi, $_POST['no_rekening']);
     $status_pembayaran = mysqli_real_escape_string($koneksi, $_POST['status_pembayaran']);
 
     // Default gunakan bukti bayar yang lama jika admin tidak upload file baru
@@ -64,8 +62,6 @@ if (isset($_POST['update'])) {
                             tanggal_bayar     = '$tanggal_bayar',
                             bulan_tagihan     = '$bulan_tagihan',
                             nominal_tagihan   = '$nominal_tagihan',
-                            nama_bank         = '$nama_bank',
-                            no_rekening       = '$no_rekening',
                             bukti_bayar       = '$nama_file_bukti',
                             status_pembayaran = '$status_pembayaran'
                          WHERE id_pembayaran  = '$id_pembayaran'";
@@ -143,20 +139,9 @@ include 'header.php';
                    value="<?= htmlspecialchars($data['nominal_tagihan'] ?? '') ?>" required>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="nama_bank" class="form-label fw-semibold">Nama Bank / Metode</label>
-                <input type="text" name="nama_bank" id="nama_bank" class="form-control" 
-                       placeholder="Contoh: BCA / Mandiri / Tunai"
-                       value="<?= htmlspecialchars($data['nama_bank'] ?? '') ?>">
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="no_rekening" class="form-label fw-semibold">No. Rekening Pengirim</label>
-                <input type="text" name="no_rekening" id="no_rekening" class="form-control" 
-                       placeholder="Masukkan nomor rekening"
-                       value="<?= htmlspecialchars($data['no_rekening'] ?? '') ?>">
-            </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Metode Pembayaran</label>
+            <input type="text" class="form-control" value="Transfer" disabled>
         </div>
 
         <div class="mb-3">
