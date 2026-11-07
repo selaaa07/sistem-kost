@@ -2,7 +2,6 @@ CREATE DATABASE kost_logic;
 USE kost_logic;
 
 -- 1. TABEL ADMIN (BARU)
-
 CREATE TABLE admin (
     id_admin INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50),
@@ -10,7 +9,6 @@ CREATE TABLE admin (
 );
 
 -- 2. TABEL KAMAR (DITAMBAH KOLOM PASSWORD)
-
 CREATE TABLE kamar (
     id_kamar INT PRIMARY KEY,
     fasilitas VARCHAR(200),
@@ -20,7 +18,6 @@ CREATE TABLE kamar (
 );
 
 -- 3. TABEL PENGHUNI (TETAP)
-
 CREATE TABLE penghuni (
     id_penghuni INT AUTO_INCREMENT PRIMARY KEY,
     nama_penghuni VARCHAR(100),
@@ -29,14 +26,13 @@ CREATE TABLE penghuni (
     FOREIGN KEY (id_kamar) REFERENCES kamar(id_kamar)
 );
 
--- 4. TABEL PEMBAYARAN (DITAMBAH BANK & BUKTI BAYAR)
-
+-- 4. TABEL PEMBAYARAN (DITAMBAH BANK, BUKTI BAYAR, & STATUS MENUNGGU)
 CREATE TABLE pembayaran (
     id_pembayaran INT AUTO_INCREMENT PRIMARY KEY,
     id_penghuni INT,
     bulan_tagihan VARCHAR(20),
     nominal_tagihan DECIMAL(12,2),
-    status_pembayaran ENUM('lunas', 'belum lunas'),
+    status_pembayaran ENUM('lunas', 'menunggu', 'belum lunas'),
     tanggal_bayar DATE,
     nama_bank VARCHAR(50) DEFAULT NULL,
     no_rekening VARCHAR(50) DEFAULT NULL,
@@ -44,6 +40,14 @@ CREATE TABLE pembayaran (
     FOREIGN KEY (id_penghuni) REFERENCES penghuni(id_penghuni)
 );
 
+-- 5. TABEL KOMPLAIN (BARU)
+CREATE TABLE komplain (
+    id_komplain INT AUTO_INCREMENT PRIMARY KEY,
+    id_kamar INT(11) NOT NULL,
+    keluhan TEXT NOT NULL,
+    tanggal_lapor DATE NOT NULL,
+    status_komplain VARCHAR(50) DEFAULT 'Menunggu Proses'
+);
 
 -- INSERT DATA DUMMY (DATA AWAL)
 

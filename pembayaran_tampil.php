@@ -7,11 +7,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
 
 include 'koneksi.php'; 
 
+// Notifikasi dan Update Status Lunas
 if (isset($_GET['aksi']) && $_GET['aksi'] == 'lunas' && isset($_GET['id'])) {
     $id_bayar = mysqli_real_escape_string($koneksi, $_GET['id']);
     $update_query = "UPDATE pembayaran SET status_pembayaran = 'lunas' WHERE id_pembayaran = '$id_bayar'";
     mysqli_query($koneksi, $update_query);
-    header("Location: pembayaran_tampil.php");
+    
+    // Memunculkan pesan pop-up berhasil lalu me-refresh halaman
+    echo "<script>alert('Pembayaran berhasil diverifikasi menjadi LUNAS!'); window.location='pembayaran_tampil.php';</script>";
     exit;
 }
 
@@ -25,7 +28,7 @@ include 'header.php';
         <p class="text-secondary mb-0">Informasi Pembayaran</p>
     </div>
 
-    <a href="pembayaran_tambah.php" class="btn btn-primary px-4 py-2">
+    <a href="pembayaran_tambah.php" class="btn btn-primary px-4 py-2" style="background-color: #5b9bd5; border:none;">
         + Catat Pembayaran Baru
     </a>
 </div>
@@ -93,7 +96,7 @@ include 'header.php';
                 
                 <td>
                     <?php if (!empty($row['bukti_bayar'])) { ?>
-                        <a href="uploads/<?= htmlspecialchars($row['bukti_bayar']) ?>" target="_blank" class="btn btn-sm btn-info text-white">Lihat Bukti</a>
+                        <a href="uploads/<?= htmlspecialchars($row['bukti_bayar']) ?>" target="_blank" class="btn btn-sm btn-info text-white" style="background-color: #5b9bd5; border:none;">Lihat Bukti</a>
                     <?php } else { ?>
                         <span class="text-secondary small">Belum ada bukti</span>
                     <?php } ?>
@@ -112,7 +115,11 @@ include 'header.php';
                 <td>
                     <div class="d-flex flex-wrap gap-2">
                         <?php if (strtolower($row['status_pembayaran']) != 'lunas') { ?>
-                            <a href="pembayaran_tampil.php?aksi=lunas&id=<?= urlencode($row['id_pembayaran']) ?>" class="btn btn-sm btn-outline-success" onclick="return confirm('Ubah status menjadi Lunas?')">Set Lunas</a>
+                            <!-- Tombol Verifikasi jika belum lunas -->
+                            <a href="pembayaran_tampil.php?aksi=lunas&id=<?= urlencode($row['id_pembayaran']) ?>" class="btn btn-sm btn-outline-success" onclick="return confirm('Ubah status menjadi Lunas?')">Verifikasi Lunas</a>
+                        <?php } else { ?>
+                            <!-- Tombol Cetak Kwitansi Muncul Otomatis saat Lunas -->
+                            <a href="cetak_kwitansi.php?id=<?= urlencode($row['id_pembayaran']) ?>" target="_blank" class="btn btn-sm btn-dark">Cetak Kwitansi</a>
                         <?php } ?>
                             <a href="pembayaran_edit.php?id=<?= urlencode($row['id_pembayaran']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                             <a href="pembayaran_hapus.php?id=<?= urlencode($row['id_pembayaran']) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</a>
@@ -127,7 +134,7 @@ include 'header.php';
                 <td colspan="10" class="text-center py-5">
                     <h5 class="fw-semibold">Belum ada riwayat transaksi</h5>
                     <p class="text-secondary mb-3">Data pembayaran yang tercatat akan muncul di sini.</p>
-                    <a href="pembayaran_tambah.php" class="btn btn-primary">+ Catat Pembayaran</a>
+                    <a href="pembayaran_tambah.php" class="btn btn-primary" style="background-color: #5b9bd5; border:none;">+ Catat Pembayaran</a>
                 </td>
             </tr>
         <?php

@@ -30,6 +30,8 @@ if (session_status() === PHP_SESSION_NONE) {
         <div class="ms-auto">
             <?php if(isset($_SESSION['user_kamar'])) { ?>
                 <a href="dashboard.php" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+                <!-- Tambahan Menu Lapor Kerusakan -->
+                <a href="komplain.php" class="btn btn-outline-light btn-sm me-2">Lapor Kerusakan</a>
                 <a href="logout.php" class="btn btn-danger btn-sm">Logout</a>
             <?php } else { ?>
                 <a href="login.php" class="btn btn-outline-light btn-sm">Login Penghuni Kost</a>

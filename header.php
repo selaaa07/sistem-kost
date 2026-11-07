@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -75,6 +74,7 @@
                 <a class="nav-link" href="kamar_tampil.php">Kamar</a>
                 <a class="nav-link" href="penghuni_tampil.php">Penghuni</a>
                 <a class="nav-link" href="pembayaran_tampil.php">Pembayaran</a>
+                <a class="nav-link" href="komplain_tampil.php">Komplain</a>
             </div>
         </div>
     </div>
