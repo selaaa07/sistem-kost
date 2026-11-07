@@ -84,10 +84,6 @@ include 'header.php';
                     Rp <?= $nominal_rupiah ?>
                 </td>
 
-                <td class="text-nowrap pe-4">
-                    Transfer
-                </td>
-                
                 <td>
                     <?php if (!empty($row['bukti_bayar'])) { ?>
                         <a href="uploads/<?= htmlspecialchars($row['bukti_bayar']) ?>" target="_blank" class="btn btn-sm btn-info text-white" style="background-color: #5b9bd5; border:none;">Lihat Bukti</a>
