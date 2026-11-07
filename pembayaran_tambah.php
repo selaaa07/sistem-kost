@@ -155,11 +155,6 @@ include 'header.php';
     </div>
 
     <div class="mb-3">
-        <label class="form-label fw-semibold">Metode Pembayaran</label>
-        <input type="text" class="form-control" value="Transfer" disabled>
-    </div>
-
-    <div class="mb-3">
         <label for="bukti_bayar" class="form-label fw-semibold">
             Upload Bukti Transfer (JPG/PNG/PDF)
         </label>

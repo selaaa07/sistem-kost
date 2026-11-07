@@ -142,12 +142,6 @@ if (!$data) {
         </div>
 
         <div class="row-data">
-            <div class="label">Metode Pembayaran</div>
-            <div class="titikdua">:</div>
-            <div class="value">Transfer</div>
-        </div>
-
-        <div class="row-data">
             <div class="label">Tanggal Bayar</div>
             <div class="titikdua">:</div>
             <div class="value"><?= date('d F Y', strtotime($data['tanggal_bayar'])) ?></div>

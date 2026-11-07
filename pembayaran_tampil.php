@@ -35,14 +35,13 @@ include 'header.php';
 
 <div class="table-responsive">
     <table class="table table-hover table-striped align-middle mb-0">
-        <thead>
+        <thead class="align-middle">
             <tr>
                 <th>ID Pembayaran</th>
                 <th>Nama Penghuni</th>
                 <th>Tanggal Bayar</th>
                 <th>Bulan Tagihan</th>
                 <th>Nominal Tagihan</th>
-                <th>Metode</th>
                 <th>Bukti Transfer</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -85,7 +84,7 @@ include 'header.php';
                     Rp <?= $nominal_rupiah ?>
                 </td>
 
-                <td>
+                <td class="text-nowrap pe-4">
                     Transfer
                 </td>
                 
@@ -126,7 +125,7 @@ include 'header.php';
         } elseif ($result) {
         ?>
             <tr>
-                <td colspan="9" class="text-center py-5">
+                <td colspan="8" class="text-center py-5">
                     <h5 class="fw-semibold">Belum ada riwayat transaksi</h5>
                     <p class="text-secondary mb-3">Data pembayaran yang tercatat akan muncul di sini.</p>
                     <a href="pembayaran_tambah.php" class="btn btn-primary" style="background-color: #5b9bd5; border:none;">+ Catat Pembayaran</a>
@@ -136,7 +135,7 @@ include 'header.php';
         } else {
         ?>
             <tr>
-                <td colspan="9" class="text-center text-danger py-4">Data pembayaran gagal dimuat.</td>
+                <td colspan="8" class="text-center text-danger py-4">Data pembayaran gagal dimuat.</td>
             </tr>
         <?php } ?>
         </tbody>
