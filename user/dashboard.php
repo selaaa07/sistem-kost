@@ -8,7 +8,7 @@ $data_penghuni = mysqli_fetch_assoc($q_penghuni);
 $id_penghuni = $data_penghuni['id_penghuni'] ?? 0;
 
 // ==========================================
-// LOGIKA UPLOAD BUKTI & OTOMATIS LUNAS
+// LOGIKA UPLOAD BUKTI (STATUS JADI MENUNGGU)
 // ==========================================
 if (isset($_POST['upload_bukti'])) {
     $id_pembayaran = $_POST['id_pembayaran'];
@@ -21,13 +21,12 @@ if (isset($_POST['upload_bukti'])) {
     $destination = "../uploads/".$nama_baru;
 
     if (move_uploaded_file($tmp_name, $destination)) {
-        // Ambil tanggal hari ini secara otomatis
         $tanggal_sekarang = date('Y-m-d');
         
-        // Update database: simpan foto, ubah status jadi lunas, dan set tanggal bayar
-        mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar='$nama_baru', status_pembayaran='lunas', tanggal_bayar='$tanggal_sekarang' WHERE id_pembayaran='$id_pembayaran'");
+        // UPDATE: Status diubah menjadi 'menunggu', bukan 'lunas'
+        mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar='$nama_baru', status_pembayaran='menunggu', tanggal_bayar='$tanggal_sekarang' WHERE id_pembayaran='$id_pembayaran'");
         
-        $sukses = "Bukti pembayaran berhasil dikirim dan tagihan otomatis LUNAS!";
+        $sukses = "Bukti berhasil dikirim! Menunggu konfirmasi Lunas dari Admin.";
     } else {
         $error = "Gagal mengupload file gambar.";
     }
@@ -38,7 +37,7 @@ include 'header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
     <div>
-        <h3 class="fw-bold text-utama mb-0">Halo, <?= htmlspecialchars($data_penghuni['nama_penghuni'] ?? 'Penghuni') ?>!</h3>
+        <h3 class="fw-bold text-utama mb-0" style="color: #5b9bd5;">Halo, <?= htmlspecialchars($data_penghuni['nama_penghuni'] ?? 'Penghuni') ?>!</h3>
         <p class="text-secondary">Kamar <?= htmlspecialchars($id_kamar) ?></p>
     </div>
     <a href="ganti_password.php" class="btn btn-outline-primary">Ubah Password</a>
@@ -62,7 +61,6 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
     <div class="card-body">
         <h5 class="fw-bold text-utama mb-4">Riwayat Tagihan & Pembayaran</h5>
         <div class="table-responsive">
-            <!-- Tambah 1 kolom "Aksi" di tabel -->
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
@@ -86,14 +84,16 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                             <td>
                                 <?php if ($b['status_pembayaran'] == 'lunas') { ?>
                                     <span class="badge bg-success px-3 py-2">Lunas</span>
+                                <?php } elseif ($b['status_pembayaran'] == 'menunggu') { ?>
+                                    <span class="badge bg-warning text-dark px-3 py-2">Menunggu Konfirmasi</span>
                                 <?php } else { ?>
-                                    <span class="badge bg-warning text-dark px-3 py-2">Belum Lunas</span>
+                                    <span class="badge bg-danger px-3 py-2">Belum Lunas</span>
                                 <?php } ?>
                             </td>
                             <td>
                                 <?php if ($b['status_pembayaran'] == 'belum lunas') { ?>
                                     <!-- Tombol Pemicu Pop-up Upload -->
-                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalBayar<?= $b['id_pembayaran'] ?>">
+                                    <button type="button" class="btn btn-sm btn-primary" style="background-color: #5b9bd5; border:none;" data-bs-toggle="modal" data-bs-target="#modalBayar<?= $b['id_pembayaran'] ?>">
                                         Bayar & Upload
                                     </button>
 
@@ -101,7 +101,7 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                                     <div class="modal fade" id="modalBayar<?= $b['id_pembayaran'] ?>" tabindex="-1">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                <div class="modal-header bg-primary text-white">
+                                                <div class="modal-header text-white" style="background-color: #5b9bd5;">
                                                     <h5 class="modal-title">Pembayaran Tagihan <?= htmlspecialchars($b['bulan_tagihan']) ?></h5>
                                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                 </div>
@@ -120,14 +120,17 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                        <button type="submit" name="upload_bukti" class="btn btn-primary">Kirim & Lunaskan</button>
+                                                        <button type="submit" name="upload_bukti" class="btn btn-primary" style="background-color: #5b9bd5; border:none;">Kirim Bukti</button>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
-                                <?php } else { ?>
-                                    <span class="text-success fw-bold">✓ Selesai</span>
+                                <?php } elseif ($b['status_pembayaran'] == 'menunggu') { ?>
+                                    <span class="text-secondary small fw-bold">Diproses Admin</span>
+                                <?php } elseif ($b['status_pembayaran'] == 'lunas') { ?>
+                                    <!-- Tombol Cetak Kwitansi Muncul Jika Lunas -->
+                                    <a href="../cetak_kwitansi.php?id=<?= $b['id_pembayaran'] ?>" target="_blank" class="btn btn-sm btn-dark">Cetak Kwitansi</a>
                                 <?php } ?>
                             </td>
                         </tr>
