@@ -28,6 +28,14 @@ $data = mysqli_fetch_assoc($query);
 if (!$data) {
     die("Data kwitansi tidak ditemukan atau tagihan belum dikonfirmasi LUNAS oleh admin.");
 }
+
+// Menentukan teks metode pembayaran
+$metode_teks = "Transfer";
+if (strtolower($data['nama_bank']) === 'tunai') {
+    $metode_teks = "Tunai (Cash)";
+} elseif (!empty($data['nama_bank'])) {
+    $metode_teks = "Transfer (" . htmlspecialchars($data['nama_bank']) . ")";
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -81,14 +89,27 @@ if (!$data) {
             flex: 1;
             border-bottom: 1px dotted #999;
         }
+        .nominal-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+        }
         .nominal {
             background-color: #f1f6fa;
             border-left: 5px solid #5b9bd5;
             padding: 15px 20px;
             font-size: 22px;
             font-weight: bold;
-            margin: 30px 0;
-            display: inline-block;
+        }
+        .metode-bayar {
+            font-size: 14px;
+            font-weight: bold;
+            padding: 8px 15px;
+            border: 2px solid #5b9bd5;
+            color: #5b9bd5;
+            border-radius: 5px;
+            text-transform: uppercase;
         }
         .footer {
             margin-top: 50px;
@@ -110,6 +131,7 @@ if (!$data) {
             .kwitansi-box { box-shadow: none; border: 2px solid #000; padding: 30px; }
             .header h2 { color: #000; }
             .nominal { background: #fff; border: 2px solid #000; }
+            .metode-bayar { border: 2px solid #000; color: #000; }
         }
     </style>
 </head>
@@ -147,8 +169,13 @@ if (!$data) {
             <div class="value"><?= date('d F Y', strtotime($data['tanggal_bayar'])) ?></div>
         </div>
 
-        <div class="nominal">
-            Uang Sebesar: Rp <?= number_format($data['nominal_tagihan'], 0, ',', '.') ?>
+        <div class="nominal-container">
+            <div class="nominal">
+                Uang Sebesar: Rp <?= number_format($data['nominal_tagihan'], 0, ',', '.') ?>
+            </div>
+            <div class="metode-bayar">
+                <?= $metode_teks ?>
+            </div>
         </div>
 
         <div class="footer">
