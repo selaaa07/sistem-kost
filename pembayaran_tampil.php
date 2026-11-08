@@ -42,7 +42,7 @@ include 'header.php';
                 <th>Tanggal Bayar</th>
                 <th>Bulan Tagihan</th>
                 <th>Nominal Tagihan</th>
-                <th>Bukti Transfer</th>
+                <th>Bukti / Metode</th>
                 <th>Status</th>
                 <th>Aksi</th>
             </tr>
@@ -85,26 +85,28 @@ include 'header.php';
                 </td>
 
                 <td>
-                    <?php if (!empty($row['bukti_bayar'])) { ?>
-                        <a href="uploads/<?= htmlspecialchars($row['bukti_bayar']) ?>" target="_blank" class="btn btn-sm btn-info text-white" style="background-color: #5b9bd5; border:none;">Lihat Bukti</a>
+                    <?php if (!empty($row['nama_bank']) && strtolower($row['nama_bank']) === 'tunai') { ?>
+                        <span class="badge bg-warning text-dark border px-3 py-2">Pembayaran Tunai</span>
+                    <?php } elseif (!empty($row['bukti_bayar'])) { ?>
+                        <a href="../uploads/<?= htmlspecialchars($row['bukti_bayar']) ?>" target="_blank" class="btn btn-sm btn-info text-white" style="background-color: #5b9bd5; border:none;">Lihat Bukti</a>
                     <?php } else { ?>
-                        <span class="text-secondary small">Belum ada bukti</span>
+                        <span class="text-secondary small">Belum ada data</span>
                     <?php } ?>
                 </td>
 
                 <td>
-                    <?php if (strtolower($row['status_pembayaran']) === 'lunas') { ?>
+                    <?php if (!empty($row['status_pembayaran']) && strtolower($row['status_pembayaran']) === 'lunas') { ?>
                         <span class="badge rounded-pill text-bg-success px-3 py-2">Lunas</span>
                     <?php } else { ?>
                         <span class="badge rounded-pill text-bg-warning px-3 py-2">
-                            <?= htmlspecialchars(ucfirst($row['status_pembayaran'])) ?>
+                            <?= htmlspecialchars(ucfirst($row['status_pembayaran'] ?? '')) ?>
                         </span>
                     <?php } ?>
                 </td>
 
                 <td>
                     <div class="d-flex flex-wrap gap-2">
-                        <?php if (strtolower($row['status_pembayaran']) != 'lunas') { ?>
+                        <?php if (empty($row['status_pembayaran']) || strtolower($row['status_pembayaran']) != 'lunas') { ?>
                             <!-- Tombol Verifikasi jika belum lunas -->
                             <a href="pembayaran_tampil.php?aksi=lunas&id=<?= urlencode($row['id_pembayaran']) ?>" class="btn btn-sm btn-outline-success" onclick="return confirm('Ubah status menjadi Lunas?')">Verifikasi Lunas</a>
                         <?php } else { ?>

@@ -8,27 +8,35 @@ $data_penghuni = mysqli_fetch_assoc($q_penghuni);
 $id_penghuni = $data_penghuni['id_penghuni'] ?? 0;
 
 // ==========================================
-// LOGIKA UPLOAD BUKTI (STATUS JADI MENUNGGU)
+// LOGIKA PEMBAYARAN (TUNAI / TRANSFER)
 // ==========================================
-if (isset($_POST['upload_bukti'])) {
+if (isset($_POST['proses_bayar'])) {
     $id_pembayaran = $_POST['id_pembayaran'];
-    $nama_file = $_FILES['bukti']['name'];
-    $tmp_name = $_FILES['bukti']['tmp_name'];
-    $ext = pathinfo($nama_file, PATHINFO_EXTENSION);
+    $metode = $_POST['metode'];
+    $tanggal_sekarang = date('Y-m-d');
     
-    // Buat nama file unik
-    $nama_baru = "bukti_".$id_pembayaran."_".time().".".$ext;
-    $destination = "../uploads/".$nama_baru;
+    if ($metode == 'Transfer') {
+        $nama_file = $_FILES['bukti']['name'];
+        $tmp_name = $_FILES['bukti']['tmp_name'];
+        
+        if (!empty($nama_file)) {
+            $ext = pathinfo($nama_file, PATHINFO_EXTENSION);
+            $nama_baru = "bukti_".$id_pembayaran."_".time().".".$ext;
+            $destination = "../uploads/".$nama_baru;
 
-    if (move_uploaded_file($tmp_name, $destination)) {
-        $tanggal_sekarang = date('Y-m-d');
-        
-        // UPDATE: Status diubah menjadi 'menunggu', bukan 'lunas'
-        mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar='$nama_baru', status_pembayaran='menunggu', tanggal_bayar='$tanggal_sekarang' WHERE id_pembayaran='$id_pembayaran'");
-        
-        $sukses = "Bukti berhasil dikirim! Menunggu konfirmasi Lunas dari Admin.";
-    } else {
-        $error = "Gagal mengupload file gambar.";
+            if (move_uploaded_file($tmp_name, $destination)) {
+                mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar='$nama_baru', status_pembayaran='menunggu', tanggal_bayar='$tanggal_sekarang', nama_bank='Transfer' WHERE id_pembayaran='$id_pembayaran'");
+                $sukses = "Bukti transfer berhasil dikirim! Menunggu konfirmasi Lunas dari Admin.";
+            } else {
+                $error = "Gagal mengupload file gambar.";
+            }
+        } else {
+            $error = "Bukti transfer wajib diupload jika memilih metode Transfer.";
+        }
+    } elseif ($metode == 'Tunai') {
+        // Jika Tunai, set status menunggu dan hapus kolom bukti (NULL)
+        mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar=NULL, status_pembayaran='menunggu', tanggal_bayar='$tanggal_sekarang', nama_bank='Tunai' WHERE id_pembayaran='$id_pembayaran'");
+        $sukses = "Metode Tunai dipilih! Silakan serahkan uang fisik ke Admin Kost agar dapat diverifikasi Lunas.";
     }
 }
 
@@ -92,44 +100,84 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                             </td>
                             <td>
                                 <?php if ($b['status_pembayaran'] == 'belum lunas') { ?>
-                                    <!-- Tombol Pemicu Pop-up Upload -->
+                                    <!-- Tombol Pemicu Pop-up -->
                                     <button type="button" class="btn btn-sm btn-primary" style="background-color: #5b9bd5; border:none;" data-bs-toggle="modal" data-bs-target="#modalBayar<?= $b['id_pembayaran'] ?>">
-                                        Bayar & Upload
+                                        Bayar Kost
                                     </button>
 
-                                    <!-- Pop-up Modal Upload Bukti -->
+                                    <!-- Pop-up Modal Pilihan Pembayaran -->
                                     <div class="modal fade" id="modalBayar<?= $b['id_pembayaran'] ?>" tabindex="-1">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header text-white" style="background-color: #5b9bd5;">
-                                                    <h5 class="modal-title">Pembayaran Tagihan <?= htmlspecialchars($b['bulan_tagihan']) ?></h5>
+                                                    <h5 class="modal-title">Pembayaran <?= htmlspecialchars($b['bulan_tagihan']) ?></h5>
                                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <form method="POST" enctype="multipart/form-data">
                                                     <div class="modal-body">
-                                                        <div class="alert alert-info small">
-                                                            <strong>Informasi Rekening Pembayaran:</strong><br>
-                                                            Silakan transfer sebesar <b>Rp <?= number_format($b['nominal_tagihan'], 0, ',', '.') ?></b> ke:<br>
-                                                            <b>BCA: 1234567890</b> a.n Pemilik Kost Logic
+                                                        <div class="alert alert-info small mb-3">
+                                                            Jumlah Tagihan: <b>Rp <?= number_format($b['nominal_tagihan'], 0, ',', '.') ?></b>
                                                         </div>
                                                         <input type="hidden" name="id_pembayaran" value="<?= $b['id_pembayaran'] ?>">
+                                                        
                                                         <div class="mb-3">
-                                                            <label class="form-label fw-bold small">Upload Bukti Transfer (JPG/PNG)</label>
-                                                            <input type="file" name="bukti" class="form-control" accept="image/*" required>
+                                                            <label class="form-label fw-bold small">Pilih Metode Pembayaran</label>
+                                                            <select name="metode" class="form-select" id="pilihMetode<?= $b['id_pembayaran'] ?>" onchange="toggleUpload<?= $b['id_pembayaran'] ?>()" required>
+                                                                <option value="Transfer">Transfer Bank</option>
+                                                                <option value="Tunai">Uang Tunai (Cash)</option>
+                                                            </select>
                                                         </div>
+
+                                                        <!-- Kolom Info Transfer & Upload Bukti -->
+                                                        <div id="areaTransfer<?= $b['id_pembayaran'] ?>">
+                                                            <div class="alert alert-secondary small p-2 mb-2">
+                                                                Transfer ke: <b>BCA 1234567890</b> a.n Pemilik Kost
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-bold small">Upload Bukti Transfer</label>
+                                                                <input type="file" name="bukti" id="inputBukti<?= $b['id_pembayaran'] ?>" class="form-control" accept="image/*" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Info Jika Tunai -->
+                                                        <div id="areaTunai<?= $b['id_pembayaran'] ?>" style="display:none;">
+                                                            <div class="alert alert-warning small mb-0">
+                                                                Anda memilih pembayaran Tunai. Silakan klik tombol <b>Konfirmasi Bayar</b> di bawah ini, lalu serahkan uang fisik sejumlah tagihan langsung ke Admin Kost.
+                                                            </div>
+                                                        </div>
+                                                        
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                        <button type="submit" name="upload_bukti" class="btn btn-primary" style="background-color: #5b9bd5; border:none;">Kirim Bukti</button>
+                                                        <button type="submit" name="proses_bayar" class="btn btn-primary" style="background-color: #5b9bd5; border:none;">Konfirmasi Bayar</button>
                                                     </div>
                                                 </form>
+
+                                                <!-- Script Toggle Dinamis -->
+                                                <script>
+                                                function toggleUpload<?= $b['id_pembayaran'] ?>() {
+                                                    var metode = document.getElementById("pilihMetode<?= $b['id_pembayaran'] ?>").value;
+                                                    var areaTransfer = document.getElementById("areaTransfer<?= $b['id_pembayaran'] ?>");
+                                                    var areaTunai = document.getElementById("areaTunai<?= $b['id_pembayaran'] ?>");
+                                                    var inputBukti = document.getElementById("inputBukti<?= $b['id_pembayaran'] ?>");
+                                                    
+                                                    if (metode === "Tunai") {
+                                                        areaTransfer.style.display = "none";
+                                                        areaTunai.style.display = "block";
+                                                        inputBukti.removeAttribute("required"); // Tidak wajib upload jika tunai
+                                                    } else {
+                                                        areaTransfer.style.display = "block";
+                                                        areaTunai.style.display = "none";
+                                                        inputBukti.setAttribute("required", "required"); // Wajib upload jika transfer
+                                                    }
+                                                }
+                                                </script>
                                             </div>
                                         </div>
                                     </div>
                                 <?php } elseif ($b['status_pembayaran'] == 'menunggu') { ?>
                                     <span class="text-secondary small fw-bold">Diproses Admin</span>
                                 <?php } elseif ($b['status_pembayaran'] == 'lunas') { ?>
-                                    <!-- Tombol Cetak Kwitansi Muncul Jika Lunas -->
                                     <a href="../cetak_kwitansi.php?id=<?= $b['id_pembayaran'] ?>" target="_blank" class="btn btn-sm btn-dark">Cetak Kwitansi</a>
                                 <?php } ?>
                             </td>
