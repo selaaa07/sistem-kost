@@ -132,3 +132,33 @@ include 'header.php';
         </div>
     </div>
 </div>
+
+<!-- Card Informasi Lokasi Kost di Landing Page -->
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm p-4 border-0" style="border-radius: 15px; background-color: #f8f9fa;">
+        <div class="card-body text-center">
+            <h4 class="fw-bold mb-3" style="color: #243b64;">
+                <i class="bi bi-geo-alt-fill text-danger"></i> Lokasi Kost Logic
+            </h4>
+            <p class="text-secondary mb-4">
+                Jl. Jenderal Sudirman, Kec. Jombang, Kota Cilegon, Banten 42411<br>
+                <i>(Patokan: Masuk gang samping Indomaret Jenderal Sudirman, pagar warna hitam)</i>
+            </p>
+            
+            <!-- Embed Google Maps Interaktif (Sudah Fix Ukurannya) -->
+            <div class="rounded overflow-hidden shadow-sm" style="border: 1px solid #dee2e6;">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126937.56846985437!2d105.9734125!3d-6.0232497!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e418e17812f6759%3A0x6a2b8e21711202e8!2sCilegon%2C%20Cilegon%20City%2C%20Banten!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid" 
+                    width="100%" 
+                    height="350" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include 'footer.php'; ?>
