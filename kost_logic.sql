@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS kost_logic;
 CREATE DATABASE kost_logic;
 USE kost_logic;
 
@@ -18,12 +19,13 @@ CREATE TABLE kamar (
     foto VARCHAR(255) DEFAULT NULL
 );
 
--- 3. TABEL PENGHUNI (TETAP)
+-- 3. TABEL PENGHUNI (BARU: TAMBAH TANGGAL MASUK)
 CREATE TABLE penghuni (
     id_penghuni INT AUTO_INCREMENT PRIMARY KEY,
     nama_penghuni VARCHAR(100),
     no_hp VARCHAR(15),
     id_kamar INT,
+    tanggal_masuk DATE DEFAULT '2026-10-01',
     FOREIGN KEY (id_kamar) REFERENCES kamar(id_kamar)
 );
 
@@ -36,6 +38,7 @@ CREATE TABLE pembayaran (
     status_pembayaran ENUM('lunas', 'menunggu', 'belum lunas'),
     tanggal_bayar DATE,
     bukti_bayar VARCHAR(255) DEFAULT NULL,
+    nama_bank VARCHAR(50) DEFAULT NULL,
     FOREIGN KEY (id_penghuni) REFERENCES penghuni(id_penghuni)
 );
 
@@ -84,3 +87,12 @@ INSERT INTO pembayaran (id_penghuni, bulan_tagihan, nominal_tagihan, status_pemb
 (4, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-02', 'bukti_4_1794629484.jpg'),
 (5, 'Oktober 2026', 1200000.00, 'belum lunas', NULL, NULL),
 (6, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-10', 'bukti_6_1793811717.jpg');
+
+USE kost_logic;
+-- khusus untuk penghuni kost perdana (6 orang), penghuni selanjutnya akan otomatis dari fitur tambah_penghuni.php, sehingga tidak perlu diubah lagi di sini.
+UPDATE penghuni SET tanggal_masuk = '2026-10-01' WHERE id_penghuni = 1; -- Budi (Tenggat tgl 1)
+UPDATE penghuni SET tanggal_masuk = '2026-10-15' WHERE id_penghuni = 2; -- Andi (Tenggat tgl 15)
+UPDATE penghuni SET tanggal_masuk = '2026-10-28' WHERE id_penghuni = 3; -- Siti (Tenggat tgl 28)
+UPDATE penghuni SET tanggal_masuk = '2026-10-02' WHERE id_penghuni = 4; -- Rina (Tenggat tgl 5)
+UPDATE penghuni SET tanggal_masuk = '2026-10-28' WHERE id_penghuni = 5; -- Doni (Tenggat tgl 28)
+UPDATE penghuni SET tanggal_masuk = '2026-10-10' WHERE id_penghuni = 6; -- Fajar (Tenggat tgl 10)

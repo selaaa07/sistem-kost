@@ -7,6 +7,43 @@ $q_penghuni = mysqli_query($koneksi, "SELECT * FROM penghuni WHERE id_kamar='$id
 $data_penghuni = mysqli_fetch_assoc($q_penghuni);
 $id_penghuni = (int) ($data_penghuni['id_penghuni'] ?? 0);
 
+// ==========================================================
+// 1. ON-LOAD AUTO-BILLING (TERBIT OTOMATIS TIAP TANGGAL 1)
+// ==========================================================
+$daftar_bulan = [
+    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+    5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+    9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+];
+$bulan_sekarang = $daftar_bulan[(int)date('n')] . ' ' . date('Y');
+
+if ($id_penghuni > 0) {
+    $cek_tagihan = mysqli_query($koneksi, "SELECT id_pembayaran FROM pembayaran WHERE id_penghuni='$id_penghuni' AND bulan_tagihan='$bulan_sekarang'");
+    
+    // Begitu masuk bulan baru (mulai tgl 1), tagihan langsung terbit otomatis
+    if (mysqli_num_rows($cek_tagihan) == 0) {
+        $q_kamar = mysqli_query($koneksi, "SELECT harga FROM kamar WHERE id_kamar='$id_kamar'");
+        $d_kamar = mysqli_fetch_assoc($q_kamar);
+        $nominal_kamar = $d_kamar['harga'] ?? 0;
+
+        mysqli_query($koneksi, "INSERT INTO pembayaran (id_penghuni, bulan_tagihan, nominal_tagihan, status_pembayaran, tanggal_bayar, bukti_bayar) 
+                                VALUES ('$id_penghuni', '$bulan_sekarang', '$nominal_kamar', 'belum lunas', NULL, NULL)");
+    }
+}
+
+// ==========================================================
+// 2. LOGIKA COUNTDOWN TENGGAT SESUAI TANGGAL MASUK PENGHUNI
+// ==========================================================
+$tgl_masuk_penghuni = $data_penghuni['tanggal_masuk'] ?? '2026-10-01';
+$hari_tenggat       = (int)date('d', strtotime($tgl_masuk_penghuni));
+
+// Antisipasi jika masuk tgl 31 sementara bulan berjalan hanya sampai tgl 28/30
+$hari_tenggat_valid = min($hari_tenggat, (int)date('t'));
+$tgl_jatuh_tempo    = date('Y-m-') . str_pad($hari_tenggat_valid, 2, '0', STR_PAD_LEFT);
+
+// Selisih hari dari hari ini ke tanggal jatuh tempo bulan ini
+$sisa_hari = (int)round((strtotime($tgl_jatuh_tempo) - strtotime(date('Y-m-d'))) / 86400);
+
 if (isset($_POST['proses_bayar'])) {
     $id_pembayaran = (int) ($_POST['id_pembayaran'] ?? 0);
     $metode = $_POST['metode'] ?? '';
@@ -105,6 +142,25 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                                     <span class="badge bg-warning text-dark px-3 py-2">Menunggu Konfirmasi</span>
                                 <?php } else { ?>
                                     <span class="badge bg-danger px-3 py-2">Belum Lunas</span>
+                                    <div class="mt-1 small">
+                                        <?php if ($b['bulan_tagihan'] == $bulan_sekarang) { ?>
+                                            <?php if ($sisa_hari > 0) { ?>
+                                                <span class="text-primary fw-semibold">
+                                                    ⏳ Tenggat tgl <?= $hari_tenggat_valid ?> (<?= $sisa_hari ?> hari lagi)
+                                                </span>
+                                            <?php } elseif ($sisa_hari == 0) { ?>
+                                                <span class="text-warning fw-bold">
+                                                    ⚠️ Jatuh tempo hari ini (tgl <?= $hari_tenggat_valid ?>)!
+                                                </span>
+                                            <?php } else { ?>
+                                                <span class="text-danger fw-bold">
+                                                    🚨 Lewat tenggat <?= abs($sisa_hari) ?> hari (tenggat tgl <?= $hari_tenggat_valid ?>)
+                                                </span>
+                                            <?php } ?>
+                                        <?php } else { ?>
+                                            <span class="text-danger fw-bold">🚨 Menunggak bulan lalu</span>
+                                        <?php } ?>
+                                    </div>
                                 <?php } ?>
                             </td>
                             <td>

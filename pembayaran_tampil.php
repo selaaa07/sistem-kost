@@ -5,7 +5,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
-include 'koneksi.php'; 
+include 'koneksi.php';
+
+// ==========================================================
+// AUTO-BILLING SEMUA PENGHUNI AKTIF (TERBIT TIAP TANGGAL 1)
+// ==========================================================
+$daftar_bulan = [
+    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+    5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+    9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+];
+$bulan_sekarang = $daftar_bulan[(int)date('n')] . ' ' . date('Y');
+
+$q_semua_penghuni = mysqli_query($koneksi, "SELECT p.id_penghuni, k.harga FROM penghuni p JOIN kamar k ON p.id_kamar = k.id_kamar");
+while ($ph = mysqli_fetch_assoc($q_semua_penghuni)) {
+    $id_p    = $ph['id_penghuni'];
+    $harga_k = $ph['harga'];
+    $cek     = mysqli_query($koneksi, "SELECT id_pembayaran FROM pembayaran WHERE id_penghuni='$id_p' AND bulan_tagihan='$bulan_sekarang'");
+    if (mysqli_num_rows($cek) == 0) {
+        mysqli_query($koneksi, "INSERT INTO pembayaran (id_penghuni, bulan_tagihan, nominal_tagihan, status_pembayaran, tanggal_bayar, bukti_bayar) 
+                                VALUES ('$id_p', '$bulan_sekarang', '$harga_k', 'belum lunas', NULL, NULL)");
+    }
+}
 
 if (isset($_GET['aksi']) && $_GET['aksi'] == 'lunas' && isset($_GET['id'])) {
     $id_bayar = mysqli_real_escape_string($koneksi, $_GET['id']);
@@ -47,7 +68,7 @@ include 'header.php';
         </thead>
         <tbody>
         <?php
-        $query = "SELECT pembayaran.*, penghuni.nama_penghuni 
+        $query = "SELECT pembayaran.*, penghuni.nama_penghuni, penghuni.tanggal_masuk 
                     FROM pembayaran 
                     LEFT JOIN penghuni ON pembayaran.id_penghuni = penghuni.id_penghuni 
                     ORDER BY pembayaran.id_pembayaran DESC";
@@ -94,12 +115,44 @@ include 'header.php';
                 </td>
 
                 <td>
-                    <?php if ($status_row === 'lunas') { ?>
+                    <?php 
+                    $status_bayar = strtolower($row['status_pembayaran'] ?? '');
+                    if ($status_bayar === 'lunas') { 
+                    ?>
                         <span class="badge rounded-pill text-bg-success px-3 py-2">Lunas</span>
-                    <?php } else { ?>
-                        <span class="badge rounded-pill text-bg-warning px-3 py-2">
-                            <?= htmlspecialchars(ucfirst($row['status_pembayaran'] ?? '')) ?>
-                        </span>
+                    <?php 
+                    } elseif ($status_bayar === 'menunggu') { 
+                    ?>
+                        <span class="badge rounded-pill text-bg-warning px-3 py-2">Menunggu</span>
+                    <?php 
+                    } else { 
+                        // Hitung tenggat waktu per penghuni berdasarkan tanggal_masuk
+                        $tgl_masuk_p        = $row['tanggal_masuk'] ?? '2026-10-01';
+                        $hari_tenggat       = (int)date('d', strtotime($tgl_masuk_p));
+                        $hari_tenggat_valid = min($hari_tenggat, (int)date('t'));
+                        $tgl_jatuh_tempo    = date('Y-m-') . str_pad($hari_tenggat_valid, 2, '0', STR_PAD_LEFT);
+                        $sisa_hari          = (int)round((strtotime($tgl_jatuh_tempo) - strtotime(date('Y-m-d'))) / 86400);
+                    ?>
+                        <span class="badge rounded-pill text-bg-danger px-3 py-2">Belum lunas</span>
+                        <div class="mt-1 small">
+                            <?php if ($row['bulan_tagihan'] == $bulan_sekarang) { ?>
+                                <?php if ($sisa_hari > 0) { ?>
+                                    <span class="text-primary fw-semibold">
+                                        ⏳ Tenggat tgl <?= $hari_tenggat_valid ?> (<?= $sisa_hari ?> hari lagi)
+                                    </span>
+                                <?php } elseif ($sisa_hari == 0) { ?>
+                                    <span class="text-warning fw-bold">
+                                        ⚠️ Jatuh tempo hari ini (tgl <?= $hari_tenggat_valid ?>)
+                                    </span>
+                                <?php } else { ?>
+                                    <span class="text-danger fw-bold">
+                                        🚨 Lewat <?= abs($sisa_hari) ?> hari (tenggat tgl <?= $hari_tenggat_valid ?>)
+                                    </span>
+                                <?php } ?>
+                            <?php } else { ?>
+                                <span class="text-danger fw-bold">🚨 Menunggak bulan lalu</span>
+                            <?php } ?>
+                        </div>
                     <?php } ?>
                 </td>
 
