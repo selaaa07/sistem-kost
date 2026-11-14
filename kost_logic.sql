@@ -81,6 +81,6 @@ INSERT INTO pembayaran (id_penghuni, bulan_tagihan, nominal_tagihan, status_pemb
 (1, 'Oktober 2026', 600000.00, 'lunas', '2026-10-01', 'bukti_1_1793813118.jpg'),
 (2, 'Oktober 2026', 600000.00, 'belum lunas', NULL, NULL),
 (3, 'Oktober 2026', 600000.00, 'lunas', '2026-10-05', 'bukti_3_1793812490.jpg'),
-(4, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-02', 'bukti_4_1793812440.jpg'),
+(4, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-02', 'bukti_7_1794048920.jpg'),
 (5, 'Oktober 2026', 1200000.00, 'belum lunas', NULL, NULL),
 (6, 'Oktober 2026', 1200000.00, 'lunas', '2026-10-10', 'bukti_6_1793811717.jpg');
