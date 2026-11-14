@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Keamanan: Hanya bisa diakses oleh admin atau penghuni yang sudah login
 if (!isset($_SESSION['user_kamar']) && (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin')) {
     die("Akses ditolak. Anda belum login.");
 }
@@ -14,28 +13,26 @@ if (!isset($_GET['id'])) {
 
 $id = mysqli_real_escape_string($koneksi, $_GET['id']);
 
-// Ambil data pembayaran beserta nama penghuni dan nomor kamar
+$filter_kamar = '';
+if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
+    $kamar_login = mysqli_real_escape_string($koneksi, $_SESSION['user_kamar']);
+    $filter_kamar = "AND h.id_kamar = '$kamar_login'";
+}
+
 $query = mysqli_query($koneksi, "
     SELECT p.*, h.nama_penghuni, h.id_kamar 
     FROM pembayaran p 
     JOIN penghuni h ON p.id_penghuni = h.id_penghuni 
-    WHERE p.id_pembayaran = '$id' AND p.status_pembayaran = 'lunas'
+    WHERE p.id_pembayaran = '$id' AND p.status_pembayaran = 'lunas' $filter_kamar
 ");
 
 $data = mysqli_fetch_assoc($query);
 
-// Cegah cetak jika data tidak ada atau belum lunas
 if (!$data) {
     die("Data kwitansi tidak ditemukan atau tagihan belum dikonfirmasi LUNAS oleh admin.");
 }
 
-// Menentukan teks metode pembayaran
-$metode_teks = "Transfer";
-if (strtolower($data['nama_bank']) === 'tunai') {
-    $metode_teks = "Tunai (Cash)";
-} elseif (!empty($data['nama_bank'])) {
-    $metode_teks = "Transfer (" . htmlspecialchars($data['nama_bank']) . ")";
-}
+$metode_teks = !empty($data['bukti_bayar']) ? "Transfer" : "Tunai (Cash)";
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -55,7 +52,7 @@ if (strtolower($data['nama_bank']) === 'tunai') {
             margin: 0 auto;
             background: #fff;
             padding: 40px;
-            border-top: 8px solid #5b9bd5; /* Warna biru kesukaanmu */
+            border-top: 8px solid #5b9bd5;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .header {
@@ -135,7 +132,6 @@ if (strtolower($data['nama_bank']) === 'tunai') {
         }
     </style>
 </head>
-<!-- Fungsi onload="window.print()" akan otomatis membuka pop-up cetak PDF/Printer -->
 <body onload="window.print()">
     <div class="kwitansi-box">
         <div class="header">

@@ -7,13 +7,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
 
 include 'koneksi.php'; 
 
-// Notifikasi dan Update Status Lunas
 if (isset($_GET['aksi']) && $_GET['aksi'] == 'lunas' && isset($_GET['id'])) {
     $id_bayar = mysqli_real_escape_string($koneksi, $_GET['id']);
     $update_query = "UPDATE pembayaran SET status_pembayaran = 'lunas' WHERE id_pembayaran = '$id_bayar'";
     mysqli_query($koneksi, $update_query);
     
-    // Memunculkan pesan pop-up berhasil lalu me-refresh halaman
     echo "<script>alert('Pembayaran berhasil diverifikasi menjadi LUNAS!'); window.location='pembayaran_tampil.php';</script>";
     exit;
 }
@@ -58,6 +56,7 @@ include 'header.php';
         if ($result && mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
                 $nominal_rupiah = number_format($row['nominal_tagihan'], 0, ',', '.');
+                $status_row = strtolower($row['status_pembayaran'] ?? '');
         ?>
             <tr>
                 <td class="fw-semibold">
@@ -85,17 +84,17 @@ include 'header.php';
                 </td>
 
                 <td>
-                    <?php if (!empty($row['nama_bank']) && strtolower($row['nama_bank']) === 'tunai') { ?>
-                        <span class="badge bg-warning text-dark border px-3 py-2">Pembayaran Tunai</span>
-                    <?php } elseif (!empty($row['bukti_bayar'])) { ?>
+                    <?php if (!empty($row['bukti_bayar'])) { ?>
                         <a href="uploads/<?= htmlspecialchars($row['bukti_bayar']) ?>" target="_blank" class="btn btn-sm btn-info text-white" style="background-color: #5b9bd5; border:none;">Lihat Bukti</a>
+                    <?php } elseif ($status_row === 'menunggu' || $status_row === 'lunas') { ?>
+                        <span class="badge bg-warning text-dark border px-3 py-2">Pembayaran Tunai</span>
                     <?php } else { ?>
                         <span class="text-secondary small">Belum ada data</span>
                     <?php } ?>
                 </td>
 
                 <td>
-                    <?php if (!empty($row['status_pembayaran']) && strtolower($row['status_pembayaran']) === 'lunas') { ?>
+                    <?php if ($status_row === 'lunas') { ?>
                         <span class="badge rounded-pill text-bg-success px-3 py-2">Lunas</span>
                     <?php } else { ?>
                         <span class="badge rounded-pill text-bg-warning px-3 py-2">
@@ -106,11 +105,9 @@ include 'header.php';
 
                 <td>
                     <div class="d-flex flex-wrap gap-2">
-                        <?php if (empty($row['status_pembayaran']) || strtolower($row['status_pembayaran']) != 'lunas') { ?>
-                            <!-- Tombol Verifikasi jika belum lunas -->
+                        <?php if ($status_row !== 'lunas') { ?>
                             <a href="pembayaran_tampil.php?aksi=lunas&id=<?= urlencode($row['id_pembayaran']) ?>" class="btn btn-sm btn-outline-success" onclick="return confirm('Ubah status menjadi Lunas?')">Verifikasi Lunas</a>
                         <?php } else { ?>
-                            <!-- Tombol Cetak Kwitansi Muncul Otomatis saat Lunas -->
                             <a href="cetak_kwitansi.php?id=<?= urlencode($row['id_pembayaran']) ?>" target="_blank" class="btn btn-sm btn-dark">Cetak Kwitansi</a>
                         <?php } ?>
                             <a href="pembayaran_edit.php?id=<?= urlencode($row['id_pembayaran']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>

@@ -7,14 +7,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
 
 include 'koneksi.php';
 
-// Ambil ID pembayaran dari URL
 $id_pembayaran = mysqli_real_escape_string($koneksi, $_GET['id'] ?? '');
 
 $query_tampil = "SELECT * FROM pembayaran WHERE id_pembayaran = '$id_pembayaran'";
 $result = mysqli_query($koneksi, $query_tampil);
 $data = mysqli_fetch_assoc($result);
 
-// Proses simpan perubahan data
 if (isset($_POST['update'])) {
     $id_penghuni       = mysqli_real_escape_string($koneksi, $_POST['id_penghuni']);
     $tanggal_bayar     = mysqli_real_escape_string($koneksi, $_POST['tanggal_bayar']);
@@ -22,7 +20,6 @@ if (isset($_POST['update'])) {
     $nominal_tagihan   = mysqli_real_escape_string($koneksi, $_POST['nominal_tagihan']);
     $status_pembayaran = mysqli_real_escape_string($koneksi, $_POST['status_pembayaran']);
 
-    // Default gunakan bukti bayar yang lama jika admin tidak upload file baru
     $nama_file_bukti = $data['bukti_bayar'] ?? '';
 
     // Cek apakah ada file bukti transfer baru yang diupload
@@ -33,12 +30,10 @@ if (isset($_POST['update'])) {
         $allowed   = ['jpg', 'jpeg', 'png', 'pdf'];
 
         if (in_array($ext, $allowed)) {
-            // Buat folder uploads otomatis jika belum ada
             if (!is_dir('uploads')) {
                 mkdir('uploads', 0777, true);
             }
 
-            // Buat nama file unik agar tidak bentrok
             $nama_file_baru = 'bukti_' . $id_pembayaran . '_' . time() . '.' . $ext;
             $tujuan_upload  = 'uploads/' . $nama_file_baru;
 
@@ -57,12 +52,14 @@ if (isset($_POST['update'])) {
     }
 
     if (!isset($error_msg)) {
+        $bukti_sql = empty($nama_file_bukti) ? "NULL" : "'" . mysqli_real_escape_string($koneksi, $nama_file_bukti) . "'";
+
         $query_update = "UPDATE pembayaran SET
                             id_penghuni       = '$id_penghuni',
                             tanggal_bayar     = '$tanggal_bayar',
                             bulan_tagihan     = '$bulan_tagihan',
                             nominal_tagihan   = '$nominal_tagihan',
-                            bukti_bayar       = '$nama_file_bukti',
+                            bukti_bayar       = $bukti_sql,
                             status_pembayaran = '$status_pembayaran'
                          WHERE id_pembayaran  = '$id_pembayaran'";
 
@@ -78,7 +75,6 @@ if (isset($_POST['update'])) {
 include 'header.php';
 ?>
 
-<!-- Judul Halaman -->
 <div class="mb-4">
     <p class="text-primary fw-semibold small mb-2">
         KELOLA DATA KOST
@@ -96,7 +92,6 @@ include 'header.php';
 
 <?php if ($data) { ?>
 
-    <!-- Wajib menggunakan enctype="multipart/form-data" untuk upload file -->
     <form action="" method="POST" enctype="multipart/form-data">
 
         <div class="mb-3">
@@ -150,7 +145,7 @@ include 'header.php';
                 </div>
             <?php } ?>
             <input type="file" name="bukti_bayar" id="bukti_bayar" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
-            <div class="form-text">Biarkan kosong jika tidak ingin mengubah bukti transfer.</div>
+            <div class="form-text">Biarkan kosong jika tidak ingin mengubah bukti. Tanpa bukti, pembayaran dianggap Tunai.</div>
         </div>
 
         <div class="mb-4">
@@ -158,6 +153,7 @@ include 'header.php';
             <select name="status_pembayaran" id="status_pembayaran" class="form-select" required>
                 <?php $status_skrg = strtolower($data['status_pembayaran'] ?? ''); ?>
                 <option value="belum lunas" <?= ($status_skrg == 'belum lunas' || $status_skrg == 'pending') ? 'selected' : '' ?>>Belum Lunas</option>
+                <option value="menunggu" <?= ($status_skrg == 'menunggu') ? 'selected' : '' ?>>Menunggu Verifikasi</option>
                 <option value="lunas" <?= ($status_skrg == 'lunas') ? 'selected' : '' ?>>Lunas</option>
             </select>
         </div>
