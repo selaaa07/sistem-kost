@@ -88,7 +88,7 @@ include 'header.php';
                     <?php if (!empty($row['nama_bank']) && strtolower($row['nama_bank']) === 'tunai') { ?>
                         <span class="badge bg-warning text-dark border px-3 py-2">Pembayaran Tunai</span>
                     <?php } elseif (!empty($row['bukti_bayar'])) { ?>
-                        <a href="../uploads/<?= htmlspecialchars($row['bukti_bayar']) ?>" target="_blank" class="btn btn-sm btn-info text-white" style="background-color: #5b9bd5; border:none;">Lihat Bukti</a>
+                        <a href="uploads/<?= htmlspecialchars($row['bukti_bayar']) ?>" target="_blank" class="btn btn-sm btn-info text-white" style="background-color: #5b9bd5; border:none;">Lihat Bukti</a>
                     <?php } else { ?>
                         <span class="text-secondary small">Belum ada data</span>
                     <?php } ?>
