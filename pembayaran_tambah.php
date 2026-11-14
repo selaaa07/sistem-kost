@@ -16,7 +16,6 @@ if (isset($_POST['simpan'])) {
 
     $nama_file_bukti = '';
 
-    // Proses upload bukti transfer jika ada file yang dipilih
     if (isset($_FILES['bukti_bayar']) && $_FILES['bukti_bayar']['error'] === UPLOAD_ERR_OK) {
         $file_tmp  = $_FILES['bukti_bayar']['tmp_name'];
         $file_name = $_FILES['bukti_bayar']['name'];
@@ -42,8 +41,10 @@ if (isset($_POST['simpan'])) {
     }
 
     if (!isset($error_msg)) {
+        $bukti_sql = ($nama_file_bukti === '') ? "NULL" : "'$nama_file_bukti'";
+
         $query_insert = "INSERT INTO pembayaran (id_penghuni, tanggal_bayar, bulan_tagihan, nominal_tagihan, bukti_bayar, status_pembayaran) 
-                         VALUES ('$id_penghuni', '$tanggal_bayar', '$bulan_tagihan', '$nominal_tagihan', '$nama_file_bukti', '$status_pembayaran')";
+                         VALUES ('$id_penghuni', '$tanggal_bayar', '$bulan_tagihan', '$nominal_tagihan', $bukti_sql, '$status_pembayaran')";
         
         if (mysqli_query($koneksi, $query_insert)) {
             header("Location: pembayaran_tampil.php");
@@ -165,7 +166,7 @@ include 'header.php';
             class="form-control"
             accept=".jpg,.jpeg,.png,.pdf"
         >
-        <div class="form-text">Opsional. Kosongkan jika belum ada bukti transfer.</div>
+        <div class="form-text">Opsional. Kosongkan jika pembayaran tunai atau belum ada bukti.</div>
     </div>
 
     <div class="mb-4">
@@ -180,6 +181,7 @@ include 'header.php';
             required
         >
             <option value="belum lunas">Belum Lunas / Pending</option>
+            <option value="menunggu">Menunggu Verifikasi</option>
             <option value="lunas">Lunas</option>
         </select>
     </div>
@@ -187,8 +189,8 @@ include 'header.php';
     <div class="d-flex flex-wrap gap-2">
         <button
             type="submit"
-            name="simpan"
             class="btn btn-primary px-4 py-2"
+            name="simpan"
         >
             Simpan Transaksi
         </button>

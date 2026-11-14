@@ -2,40 +2,51 @@
 session_start();
 if (!isset($_SESSION['user_kamar'])) { header("Location: login.php"); exit; }
 include '../koneksi.php';
-$id_kamar = $_SESSION['user_kamar'];
+$id_kamar = mysqli_real_escape_string($koneksi, $_SESSION['user_kamar']);
 $q_penghuni = mysqli_query($koneksi, "SELECT * FROM penghuni WHERE id_kamar='$id_kamar'");
 $data_penghuni = mysqli_fetch_assoc($q_penghuni);
-$id_penghuni = $data_penghuni['id_penghuni'] ?? 0;
+$id_penghuni = (int) ($data_penghuni['id_penghuni'] ?? 0);
 
-// ==========================================
-// LOGIKA PEMBAYARAN (TUNAI / TRANSFER)
-// ==========================================
 if (isset($_POST['proses_bayar'])) {
-    $id_pembayaran = $_POST['id_pembayaran'];
-    $metode = $_POST['metode'];
+    $id_pembayaran = (int) ($_POST['id_pembayaran'] ?? 0);
+    $metode = $_POST['metode'] ?? '';
     $tanggal_sekarang = date('Y-m-d');
-    
-    if ($metode == 'Transfer') {
-        $nama_file = $_FILES['bukti']['name'];
-        $tmp_name = $_FILES['bukti']['tmp_name'];
-        
-        if (!empty($nama_file)) {
-            $ext = pathinfo($nama_file, PATHINFO_EXTENSION);
-            $nama_baru = "bukti_".$id_pembayaran."_".time().".".$ext;
-            $destination = "../uploads/".$nama_baru;
 
-            if (move_uploaded_file($tmp_name, $destination)) {
-                mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar='$nama_baru', status_pembayaran='menunggu', tanggal_bayar='$tanggal_sekarang', nama_bank='Transfer' WHERE id_pembayaran='$id_pembayaran'");
-                $sukses = "Bukti transfer berhasil dikirim! Menunggu konfirmasi Lunas dari Admin.";
+    $cek_milik = mysqli_query($koneksi, "SELECT id_pembayaran FROM pembayaran WHERE id_pembayaran='$id_pembayaran' AND id_penghuni='$id_penghuni' AND status_pembayaran='belum lunas'");
+
+    if (mysqli_num_rows($cek_milik) == 0) {
+        $error = "Tagihan tidak valid atau sudah diproses.";
+    } elseif ($metode == 'Transfer') {
+        $nama_file = $_FILES['bukti']['name'] ?? '';
+        $tmp_name  = $_FILES['bukti']['tmp_name'] ?? '';
+
+        if (!empty($nama_file)) {
+            $ext = strtolower(pathinfo($nama_file, PATHINFO_EXTENSION));
+            $allowed = ['jpg', 'jpeg', 'png'];
+
+            if (!in_array($ext, $allowed)) {
+                $error = "Format file tidak didukung! Gunakan JPG, JPEG, atau PNG.";
             } else {
-                $error = "Gagal mengupload file gambar.";
+                if (!is_dir("../uploads")) {
+                    mkdir("../uploads", 0777, true);
+                }
+
+                $nama_baru = "bukti_" . $id_pembayaran . "_" . time() . "." . $ext;
+                $destination = "../uploads/" . $nama_baru;
+
+                if (move_uploaded_file($tmp_name, $destination)) {
+                    mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar='$nama_baru', status_pembayaran='menunggu', tanggal_bayar='$tanggal_sekarang' WHERE id_pembayaran='$id_pembayaran'");
+                    $sukses = "Bukti transfer berhasil dikirim! Menunggu konfirmasi Lunas dari Admin.";
+                } else {
+                    $error = "Gagal mengupload file gambar.";
+                }
             }
         } else {
             $error = "Bukti transfer wajib diupload jika memilih metode Transfer.";
         }
     } elseif ($metode == 'Tunai') {
-        // Jika Tunai, set status menunggu dan hapus kolom bukti (NULL)
-        mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar=NULL, status_pembayaran='menunggu', tanggal_bayar='$tanggal_sekarang', nama_bank='Tunai' WHERE id_pembayaran='$id_pembayaran'");
+        // Jika Tunai, set status menunggu dan kosongkan kolom bukti (NULL)
+        mysqli_query($koneksi, "UPDATE pembayaran SET bukti_bayar=NULL, status_pembayaran='menunggu', tanggal_bayar='$tanggal_sekarang' WHERE id_pembayaran='$id_pembayaran'");
         $sukses = "Metode Tunai dipilih! Silakan serahkan uang fisik ke Admin Kost agar dapat diverifikasi Lunas.";
     }
 }
@@ -51,11 +62,9 @@ include 'header.php';
     <a href="ganti_password.php" class="btn btn-outline-primary">Ubah Password</a>
 </div>
 
-<!-- Notifikasi Berhasil/Gagal Upload -->
-<?php if (isset($error)) echo "<div class='alert alert-danger small'>$error</div>"; ?>
-<?php if (isset($sukses)) echo "<div class='alert alert-success small'>$sukses</div>"; ?>
+<?php if (isset($error)) echo "<div class='alert alert-danger small'>" . htmlspecialchars($error) . "</div>"; ?>
+<?php if (isset($sukses)) echo "<div class='alert alert-success small'>" . htmlspecialchars($sukses) . "</div>"; ?>
 
-<!-- Logika Peringatan Merah Jika Belum Bayar -->
 <?php
 $cek_tunggakan = mysqli_query($koneksi, "SELECT * FROM pembayaran WHERE id_penghuni='$id_penghuni' AND status_pembayaran='belum lunas'");
 if (mysqli_num_rows($cek_tunggakan) > 0) {
@@ -88,7 +97,7 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                         <tr>
                             <td class="fw-semibold"><?= htmlspecialchars($b['bulan_tagihan']) ?></td>
                             <td>Rp <?= number_format($b['nominal_tagihan'], 0, ',', '.') ?></td>
-                            <td><?= ($b['tanggal_bayar'] ?? '-') ?></td>
+                            <td><?= htmlspecialchars($b['tanggal_bayar'] ?? '-') ?></td>
                             <td>
                                 <?php if ($b['status_pembayaran'] == 'lunas') { ?>
                                     <span class="badge bg-success px-3 py-2">Lunas</span>
@@ -100,12 +109,10 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                             </td>
                             <td>
                                 <?php if ($b['status_pembayaran'] == 'belum lunas') { ?>
-                                    <!-- Tombol Pemicu Pop-up -->
                                     <button type="button" class="btn btn-sm btn-primary" style="background-color: #5b9bd5; border:none;" data-bs-toggle="modal" data-bs-target="#modalBayar<?= $b['id_pembayaran'] ?>">
                                         Bayar Kost
                                     </button>
 
-                                    <!-- Pop-up Modal Pilihan Pembayaran -->
                                     <div class="modal fade" id="modalBayar<?= $b['id_pembayaran'] ?>" tabindex="-1">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -122,24 +129,22 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                                                         
                                                         <div class="mb-3">
                                                             <label class="form-label fw-bold small">Pilih Metode Pembayaran</label>
-                                                            <select name="metode" class="form-select" id="pilihMetode<?= $b['id_pembayaran'] ?>" onchange="toggleUpload<?= $b['id_pembayaran'] ?>()" required>
+                                                            <select name="metode" class="form-select" id="pilihMetode<?= $b['id_pembayaran'] ?>" onchange="toggleUpload<?= $b['id_pembayaran'] ?>()" autocomplete="off" required>
                                                                 <option value="Transfer">Transfer Bank</option>
                                                                 <option value="Tunai">Uang Tunai (Cash)</option>
                                                             </select>
                                                         </div>
 
-                                                        <!-- Kolom Info Transfer & Upload Bukti -->
                                                         <div id="areaTransfer<?= $b['id_pembayaran'] ?>">
                                                             <div class="alert alert-secondary small p-2 mb-2">
                                                                 Transfer ke: <b>BCA 1234567890</b> a.n Pemilik Kost
                                                             </div>
                                                             <div class="mb-3">
-                                                                <label class="form-label fw-bold small">Upload Bukti Transfer</label>
-                                                                <input type="file" name="bukti" id="inputBukti<?= $b['id_pembayaran'] ?>" class="form-control" accept="image/*" required>
+                                                                <label class="form-label fw-bold small">Upload Bukti Transfer (JPG/PNG)</label>
+                                                                <input type="file" name="bukti" id="inputBukti<?= $b['id_pembayaran'] ?>" class="form-control" accept=".jpg,.jpeg,.png" required>
                                                             </div>
                                                         </div>
 
-                                                        <!-- Info Jika Tunai -->
                                                         <div id="areaTunai<?= $b['id_pembayaran'] ?>" style="display:none;">
                                                             <div class="alert alert-warning small mb-0">
                                                                 Anda memilih pembayaran Tunai. Silakan klik tombol <b>Konfirmasi Bayar</b> di bawah ini, lalu serahkan uang fisik sejumlah tagihan langsung ke Admin Kost.
@@ -171,6 +176,8 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
                                                         inputBukti.setAttribute("required", "required"); // Wajib upload jika transfer
                                                     }
                                                 }
+
+                                                document.getElementById("modalBayar<?= $b['id_pembayaran'] ?>").addEventListener("show.bs.modal", toggleUpload<?= $b['id_pembayaran'] ?>);
                                                 </script>
                                             </div>
                                         </div>
@@ -189,5 +196,4 @@ if (mysqli_num_rows($cek_tunggakan) > 0) {
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <?php include 'footer.php'; ?>
