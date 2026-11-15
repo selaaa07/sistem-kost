@@ -39,7 +39,7 @@ CREATE TABLE pembayaran (
     tanggal_bayar DATE,
     bukti_bayar VARCHAR(255) DEFAULT NULL,
     nama_bank VARCHAR(50) DEFAULT NULL,
-    FOREIGN KEY (id_penghuni) REFERENCES penghuni(id_penghuni)
+    FOREIGN KEY (id_penghuni) REFERENCES penghuni(id_penghuni) ON DELETE SET NULL
 );
 
 -- 5. TABEL KOMPLAIN (BARU)

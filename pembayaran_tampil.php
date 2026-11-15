@@ -17,7 +17,12 @@ $daftar_bulan = [
 ];
 $bulan_sekarang = $daftar_bulan[(int)date('n')] . ' ' . date('Y');
 
-$q_semua_penghuni = mysqli_query($koneksi, "SELECT p.id_penghuni, k.harga FROM penghuni p JOIN kamar k ON p.id_kamar = k.id_kamar");
+$q_semua_penghuni = mysqli_query($koneksi, "
+    SELECT p.id_penghuni, k.harga 
+    FROM penghuni p 
+    JOIN kamar k ON p.id_kamar = k.id_kamar
+    WHERE DATE_FORMAT(p.tanggal_masuk, '%Y-%m') <= DATE_FORMAT(CURDATE(), '%Y-%m')
+");
 while ($ph = mysqli_fetch_assoc($q_semua_penghuni)) {
     $id_p    = $ph['id_penghuni'];
     $harga_k = $ph['harga'];
@@ -37,6 +42,17 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'lunas' && isset($_GET['id'])) {
     exit;
 }
 
+$filter_bulan = isset($_GET['bulan']) ? trim($_GET['bulan']) : '';
+$q_opsi_bulan = mysqli_query($koneksi, "
+    SELECT bulan_tagihan 
+    FROM pembayaran 
+    GROUP BY bulan_tagihan 
+    ORDER BY RIGHT(bulan_tagihan, 4) DESC,
+             FIELD(SUBSTRING_INDEX(bulan_tagihan, ' ', 1),
+             'Desember','November','Oktober','September','Agustus','Juli',
+             'Juni','Mei','April','Maret','Februari','Januari') ASC
+");
+
 include 'header.php'; 
 ?>
 
@@ -47,9 +63,27 @@ include 'header.php';
         <p class="text-secondary mb-0">Informasi Pembayaran</p>
     </div>
 
-    <a href="pembayaran_tambah.php" class="btn btn-primary px-4 py-2" style="background-color: #5b9bd5; border:none;">
-        + Catat Pembayaran Baru
-    </a>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <form method="GET" class="d-flex align-items-center gap-2">
+            <select name="bulan" class="form-select" onchange="this.form.submit()">
+                <option value="">Semua Bulan</option>
+                <?php if ($q_opsi_bulan && mysqli_num_rows($q_opsi_bulan) > 0) { ?>
+                    <?php while ($ob = mysqli_fetch_assoc($q_opsi_bulan)) { ?>
+                        <option value="<?= htmlspecialchars($ob['bulan_tagihan']) ?>" <?= ($filter_bulan === $ob['bulan_tagihan']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($ob['bulan_tagihan']) ?>
+                        </option>
+                    <?php } ?>
+                <?php } ?>
+            </select>
+            <?php if ($filter_bulan !== '') { ?>
+                <a href="pembayaran_tampil.php" class="btn btn-outline-secondary">Reset</a>
+            <?php } ?>
+        </form>
+
+        <a href="pembayaran_tambah.php" class="btn btn-primary px-4 py-2" style="background-color: #5b9bd5; border:none;">
+            + Catat Pembayaran Baru
+        </a>
+    </div>
 </div>
 
 <div class="table-responsive">
@@ -68,9 +102,15 @@ include 'header.php';
         </thead>
         <tbody>
         <?php
+        $where_clause = "";
+        if ($filter_bulan !== '') {
+            $bulan_safe = mysqli_real_escape_string($koneksi, $filter_bulan);
+            $where_clause = "WHERE pembayaran.bulan_tagihan = '$bulan_safe'";
+        }
         $query = "SELECT pembayaran.*, penghuni.nama_penghuni, penghuni.tanggal_masuk 
                     FROM pembayaran 
                     LEFT JOIN penghuni ON pembayaran.id_penghuni = penghuni.id_penghuni 
+                    $where_clause
                     ORDER BY pembayaran.id_pembayaran DESC";
         $result = mysqli_query($koneksi, $query);
 
