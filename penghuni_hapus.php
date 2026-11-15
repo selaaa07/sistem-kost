@@ -15,20 +15,18 @@ if (isset($_GET['id'])) {
         $data_kamar = mysqli_fetch_assoc($cari);
         $id_kamar = $data_kamar['id_kamar'];
 
-        // 1. Hapus semua riwayat pembayaran milik penghuni ini terlebih dahulu (Mencegah Error Foreign Key)
-        mysqli_query($koneksi, "DELETE FROM pembayaran WHERE id_penghuni='$id'");
 
-        // 2. Hapus data penghuninya
+        // 1. Hapus data penghuninya
         $hapus = mysqli_query($koneksi, "DELETE FROM penghuni WHERE id_penghuni='$id'");
 
         if ($hapus) {
-            // 3. Reset status kamar menjadi kosong
+            // 2. Reset status kamar menjadi kosong
             mysqli_query($koneksi, "UPDATE kamar SET status_kamar='kosong', password='kost123' WHERE id_kamar='$id_kamar'");
             
             echo "<script>
-                    alert('Data penghuni beserta riwayat pembayarannya berhasil dihapus dan kamar otomatis direset!'); 
+                    alert('Data penghuni berhasil dihapus dan kamar otomatis direset! Riwayat & bukti pembayaran tetap tersimpan sebagai arsip.'); 
                     window.location.href='penghuni_tampil.php';
-                  </script>";
+          </script>";
         } else {
             echo "<script>
                     alert('Gagal menghapus data penghuni!'); 

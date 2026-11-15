@@ -8,15 +8,33 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
 include 'koneksi.php';
 
 if (isset($_POST['simpan'])) {
-    $nama_penghuni = $_POST['nama_penghuni'];
-    $no_hp = $_POST['no_hp'];
-    $id_kamar = $_POST['id_kamar'];
+    $nama_penghuni = mysqli_real_escape_string($koneksi, $_POST['nama_penghuni']);
+    $no_hp         = mysqli_real_escape_string($koneksi, $_POST['no_hp']);
+    $id_kamar      = mysqli_real_escape_string($koneksi, $_POST['id_kamar']);
+    $tanggal_masuk = mysqli_real_escape_string($koneksi, $_POST['tanggal_masuk']);
 
-    $query_insert = "INSERT INTO penghuni (nama_penghuni, no_hp, id_kamar) 
-                     VALUES ('$nama_penghuni', '$no_hp', '$id_kamar')";
+    $query_insert = "INSERT INTO penghuni (nama_penghuni, no_hp, id_kamar, tanggal_masuk) 
+                     VALUES ('$nama_penghuni', '$no_hp', '$id_kamar', '$tanggal_masuk')";
     
     if (mysqli_query($koneksi, $query_insert)) {
+        $id_penghuni_baru = mysqli_insert_id($koneksi);
+
         mysqli_query($koneksi, "UPDATE kamar SET status_kamar = 'terisi' WHERE id_kamar = '$id_kamar'");
+
+        // Otomatis buat tagihan perdana sesuai bulan tanggal_masuk
+        $daftar_bulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $bulan_masuk = $daftar_bulan[(int)date('n', strtotime($tanggal_masuk))] . ' ' . date('Y', strtotime($tanggal_masuk));
+
+        $q_kamar = mysqli_query($koneksi, "SELECT harga FROM kamar WHERE id_kamar = '$id_kamar'");
+        $d_kamar = mysqli_fetch_assoc($q_kamar);
+        $harga_kamar = $d_kamar['harga'] ?? 0;
+
+        mysqli_query($koneksi, "INSERT INTO pembayaran (id_penghuni, bulan_tagihan, nominal_tagihan, status_pembayaran, tanggal_bayar, bukti_bayar) 
+                                VALUES ('$id_penghuni_baru', '$bulan_masuk', '$harga_kamar', 'belum lunas', NULL, NULL)");
         
         header("Location: penghuni_tampil.php");
         exit;
@@ -80,6 +98,21 @@ include 'header.php';
                 placeholder="Masukkan nomor HP"
                 required
             >
+        </div>
+
+        <div class="mb-3">
+            <label for="tanggal_masuk" class="form-label fw-semibold">
+                Tanggal Masuk Sewa
+            </label>
+            <input
+                type="date"
+                class="form-control"
+                id="tanggal_masuk"
+                name="tanggal_masuk"
+                value="<?= date('Y-m-d') ?>"
+                required
+            >
+            <div class="form-text">Tanggal ini menjadi acuan tenggat tagihan setiap bulannya.</div>
         </div>
 
         <div class="mb-4">
