@@ -2,21 +2,32 @@
 session_start();
 if (!isset($_SESSION['user_kamar'])) { header("Location: login.php"); exit; }
 include '../koneksi.php';
-$id_kamar = $_SESSION['user_kamar'];
+$id_kamar = mysqli_real_escape_string($koneksi, $_SESSION['user_kamar']);
 
-// Logika menyimpan data komplain ke database
+// Simpan komplain, lalu REDIRECT (Post/Redirect/Get)
 if (isset($_POST['kirim_komplain'])) {
-    $keluhan = mysqli_real_escape_string($koneksi, $_POST['keluhan']);
+    $keluhan = mysqli_real_escape_string($koneksi, trim($_POST['keluhan']));
     $tgl = date('Y-m-d');
-    
-    $insert = mysqli_query($koneksi, "INSERT INTO komplain (id_kamar, keluhan, tanggal_lapor, status_komplain) VALUES ('$id_kamar', '$keluhan', '$tgl', 'Menunggu Proses')");
-    
-    if($insert){
-        $sukses = "Laporan kerusakan berhasil dikirim ke Admin.";
-    } else {
-        $error = "Gagal mengirim laporan.";
+
+    if ($keluhan !== '') {
+        $insert = mysqli_query($koneksi, "INSERT INTO komplain (id_kamar, keluhan, tanggal_lapor, status_komplain) VALUES ('$id_kamar', '$keluhan', '$tgl', 'Menunggu Proses')");
+        $_SESSION['flash'] = $insert
+            ? ['sukses', 'Laporan kerusakan berhasil dikirim ke Admin.']
+            : ['error', 'Gagal mengirim laporan.'];
     }
+
+    header("Location: komplain.php");
+    exit;
 }
+
+// Ambil pesan sekali pakai setelah redirect
+$sukses = $error = null;
+if (isset($_SESSION['flash'])) {
+    [$tipe, $pesan] = $_SESSION['flash'];
+    if ($tipe === 'sukses') { $sukses = $pesan; } else { $error = $pesan; }
+    unset($_SESSION['flash']);
+}
+
 include 'header.php';
 ?>
 <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
@@ -26,8 +37,8 @@ include 'header.php';
     </div>
 </div>
 
-<?php if (isset($sukses)) echo "<div class='alert alert-success alert-dismissible fade show'>$sukses <button type='button' class='btn-close' data-bs-dismiss='alert'></button></div>"; ?>
-<?php if (isset($error)) echo "<div class='alert alert-danger alert-dismissible fade show'>$error <button type='button' class='btn-close' data-bs-dismiss='alert'></button></div>"; ?>
+<?php if ($sukses) echo "<div class='alert alert-success alert-dismissible fade show'>" . htmlspecialchars($sukses) . " <button type='button' class='btn-close' data-bs-dismiss='alert'></button></div>"; ?>
+<?php if ($error) echo "<div class='alert alert-danger alert-dismissible fade show'>" . htmlspecialchars($error) . " <button type='button' class='btn-close' data-bs-dismiss='alert'></button></div>"; ?>
 
 <div class="card shadow-sm p-3 mb-5 border-top border-4" style="border-color: #5b9bd5 !important;">
     <div class="card-body">
@@ -78,5 +89,4 @@ include 'header.php';
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <?php include 'footer.php'; ?>
